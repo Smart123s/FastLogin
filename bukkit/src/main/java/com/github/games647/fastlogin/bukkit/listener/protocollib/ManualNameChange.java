@@ -30,6 +30,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.github.games647.fastlogin.bukkit.FastLoginBukkit;
+import com.github.games647.fastlogin.core.hooks.FloodgateHook;
 
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -57,6 +58,12 @@ public class ManualNameChange extends PacketAdapter {
     public void onPacketReceiving(PacketEvent packetEvent) {
         PacketContainer packet = packetEvent.getPacket();
         WrappedGameProfile originalProfile = packet.getGameProfiles().read(0);
+
+        if (FloodgateHook.getFloodgatePlayerUnsafe(originalProfile.getName()) == null) {
+            //not a Floodgate player, no need to add a prefix
+            return;
+        }
+
         packet.setMeta("original_name", originalProfile.getName());
         String prefixedName = FloodgateApi.getInstance().getPlayerPrefix() + originalProfile.getName();
         WrappedGameProfile updatedProfile = originalProfile.withName(prefixedName);

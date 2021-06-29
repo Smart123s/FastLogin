@@ -91,19 +91,32 @@ public class FloodgateHook<P extends C, C, S extends LoginSource> {
     }
 
     /**
-     * The FloodgateApi does not support querying players by name, so this function
-     * iterates over every online FloodgatePlayer and checks if the requested
-     * username can be found
+     * Checks if Floodgate is installed before running {@link #getFloodgatePlayerUnsafe()}
      * 
      * @param username the name of the player
      * @return FloodgatePlayer if found, null otherwise
      */
     public FloodgatePlayer getFloodgatePlayer(String username) {
         if (core.getPlugin().isPluginInstalled("floodgate")) {
-            for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
-                if (floodgatePlayer.getUsername().equals(username)) {
-                    return floodgatePlayer;
-                }
+            return getFloodgatePlayerUnsafe(username);
+        }
+        return null;
+    }
+
+    /**
+     * The FloodgateApi does not support querying players by name, so this function
+     * iterates over every online FloodgatePlayer and checks if the requested username
+     * can be found.
+     * <br>
+     * This does <b>not</b> check if Floodgate is actually installed.
+     * 
+     * @param username the name of the player
+     * @return FloodgatePlayer if found, null otherwise
+     */
+    public static FloodgatePlayer getFloodgatePlayerUnsafe(String username) {
+        for (FloodgatePlayer floodgatePlayer : FloodgateApi.getInstance().getPlayers()) {
+            if (floodgatePlayer.getUsername().equals(username)) {
+                return floodgatePlayer;
             }
         }
         return null;
