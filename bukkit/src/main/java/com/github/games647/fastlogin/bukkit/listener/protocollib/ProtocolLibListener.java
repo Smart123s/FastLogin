@@ -43,6 +43,8 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 
 public class ProtocolLibListener extends PacketAdapter {
 
+    public static final String SOURCE_META_KEY = "source";
+
     private final FastLoginBukkit plugin;
 
     //just create a new once on plugin enable. This used for verify token generation
@@ -62,7 +64,8 @@ public class ProtocolLibListener extends PacketAdapter {
     }
 
     public static void register(FastLoginBukkit plugin, RateLimiter rateLimiter) {
-        //they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
+        // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
+        // TODO: make synchronous processing, but do web or database requests async
         ProtocolLibrary.getProtocolManager()
                 .getAsynchronousManager()
                 .registerAsyncHandler(new ProtocolLibListener(plugin, rateLimiter))
@@ -72,8 +75,13 @@ public class ProtocolLibListener extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent packetEvent) {
         if (packetEvent.isCancelled()
-                || plugin.getCore().getAuthPluginHook()== null
+                || plugin.getCore().getAuthPluginHook() == null
                 || !plugin.isServerFullyStarted()) {
+            return;
+        }
+
+        if (packetEvent.getPacket().getMeta(SOURCE_META_KEY).map(val -> val.equals(plugin.getName())).orElse(false)) {
+            // this is our own packet
             return;
         }
 
@@ -119,7 +127,7 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.getLog().trace("GameProfile {} with {} connecting", sessionKey, username);
 
         packetEvent.getAsyncMarker().incrementProcessingDelay();
-        Runnable nameCheckTask = new NameCheckTask(plugin, packetEvent, random, player, username, keyPair.getPublic());
+        Runnable nameCheckTask = new NameCheckTask(plugin, random, player, packetEvent, username, keyPair.getPublic());
         plugin.getScheduler().runAsync(nameCheckTask);
     }
 }
