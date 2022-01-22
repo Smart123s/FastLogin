@@ -128,7 +128,7 @@ public class StoredProfile extends Profile {
         }
 
         return rowId == that.rowId && premium == that.premium
-            && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
+                && Objects.equals(lastIp, that.lastIp) && lastLogin.equals(that.lastLogin);
     }
 
     @Override
@@ -141,6 +141,7 @@ public class StoredProfile extends Profile {
         return this.getClass().getSimpleName() + '{'
             + "rowId=" + rowId
             + ", premium=" + premium
+            + ", floodgate=" + floodgate
             + ", lastIp='" + lastIp + '\''
             + ", lastLogin=" + lastLogin
             + "} " + super.toString();
