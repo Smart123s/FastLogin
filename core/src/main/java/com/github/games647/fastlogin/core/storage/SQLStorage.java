@@ -53,19 +53,23 @@ public abstract class SQLStorage implements AuthStorage {
             + "`UUID` CHAR(36), "
             + "`Name` VARCHAR(16) NOT NULL, "
             + "`Premium` BOOLEAN NOT NULL, "
+            + "`Floodgate` BOOLEAN NOT NULL, "
             + "`LastIp` VARCHAR(255) NOT NULL, "
             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             //the premium shouldn't steal the cracked account by changing the name
             + "UNIQUE (`Name`) "
             + ')';
 
-    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
-    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
+    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE
+            + "` WHERE `Name`=? AND `Floodgate`=? LIMIT 1";
+    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE
+            + "` WHERE `UUID`=? AND `Floodgate`=? LIMIT 1";
     protected static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
-            + "` (`UUID`, `Name`, `Premium`, `LastIp`) " + "VALUES (?, ?, ?, ?) ";
+            + "` (`UUID`, `Name`, `Premium`, Floodgate, `LastIp`) " + "VALUES (?, ?, ?, ?, ?) ";
     // limit not necessary here, because it's unique
     protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
-            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `LastIp`=?, `LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
+            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `Floodgate`=?, `LastIp`=?, "
+            + "`LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
 
     protected final FastLoginCore<?, ?, ?> core;
     protected final HikariDataSource dataSource;
@@ -96,14 +100,15 @@ public abstract class SQLStorage implements AuthStorage {
     }
 
     @Override
-    public StoredProfile loadProfile(String name) {
+    public StoredProfile loadProfile(String name, boolean isFloodgate) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
         ) {
             loadStmt.setString(1, name);
+            loadStmt.setBoolean(2, isFloodgate);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, ""));
+                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, isFloodgate, ""));
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLog().error("Failed to query profile: {}", name, sqlEx);
@@ -113,10 +118,18 @@ public abstract class SQLStorage implements AuthStorage {
     }
 
     @Override
-    public StoredProfile loadProfile(UUID uuid) {
+    @Deprecated
+    public StoredProfile loadProfile(String name) {
+        return loadProfile(name, false);
+    }
+
+
+    @Override
+    public StoredProfile loadProfile(UUID uuid, boolean isFloodgate) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
             loadStmt.setString(1, UUIDAdapter.toMojangId(uuid));
+            loadStmt.setBoolean(2, isFloodgate);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
                 return parseResult(resultSet).orElse(null);
@@ -128,6 +141,12 @@ public abstract class SQLStorage implements AuthStorage {
         return null;
     }
 
+    @Override
+    @Deprecated
+    public StoredProfile loadProfile(UUID uuid) {
+        return loadProfile(uuid, false);
+    }
+
     private Optional<StoredProfile> parseResult(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
             long userId = resultSet.getInt(1);
@@ -136,9 +155,10 @@ public abstract class SQLStorage implements AuthStorage {
 
             String name = resultSet.getString(3);
             boolean premium = resultSet.getBoolean(4);
-            String lastIp = resultSet.getString(5);
-            Instant lastLogin = resultSet.getTimestamp(6).toInstant();
-            return Optional.of(new StoredProfile(userId, uuid, name, premium, lastIp, lastLogin));
+            boolean floodgate = resultSet.getBoolean(5);
+            String lastIp = resultSet.getString(6);
+            Instant lastLogin = resultSet.getTimestamp(7).toInstant();
+            return Optional.of(new StoredProfile(userId, uuid, name, premium, floodgate, lastIp, lastLogin));
         }
 
         return Optional.empty();
@@ -156,9 +176,10 @@ public abstract class SQLStorage implements AuthStorage {
                         saveStmt.setString(1, uuid);
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setString(4, playerProfile.getLastIp());
+                        saveStmt.setBoolean(4, playerProfile.isFloodgate());
+                        saveStmt.setString(5, playerProfile.getLastIp());
 
-                        saveStmt.setLong(5, playerProfile.getRowId());
+                        saveStmt.setLong(6, playerProfile.getRowId());
                         saveStmt.execute();
                     }
                 } else {
@@ -167,7 +188,9 @@ public abstract class SQLStorage implements AuthStorage {
 
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setString(4, playerProfile.getLastIp());
+                        saveStmt.setBoolean(3, playerProfile.isPremium());
+                        saveStmt.setBoolean(4, playerProfile.isFloodgate());
+                        saveStmt.setString(5, playerProfile.getLastIp());
 
                         saveStmt.execute();
                         try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {

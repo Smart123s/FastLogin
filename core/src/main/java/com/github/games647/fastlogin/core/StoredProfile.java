@@ -54,11 +54,6 @@ public class StoredProfile extends Profile {
         this.lastLogin = lastLogin;
     }
 
-    @Deprecated
-    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
-        this(rowId, uuid, playerName, premium, false, lastIp, lastLogin);
-    }
-
     public StoredProfile(UUID uuid, String playerName, boolean premium, boolean isFloodgate, String lastIp) {
         this(-1, uuid, playerName, premium, isFloodgate, lastIp, Instant.now());
     }

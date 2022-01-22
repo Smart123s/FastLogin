@@ -37,23 +37,35 @@ public class SQLiteStorage extends SQLStorage {
     }
 
     @Override
-    public StoredProfile loadProfile(String name) {
+    public StoredProfile loadProfile(String name, boolean isFloodgate) {
         lock.lock();
         try {
-            return super.loadProfile(name);
+            return super.loadProfile(name, isFloodgate);
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public StoredProfile loadProfile(UUID uuid) {
+    @Deprecated
+    public StoredProfile loadProfile(String name) {
+        return loadProfile(name, false);
+    }
+
+    @Override
+    public StoredProfile loadProfile(UUID uuid, boolean isFloodgate) {
         lock.lock();
         try {
-            return super.loadProfile(uuid);
+            return super.loadProfile(uuid, isFloodgate);
         } finally {
             lock.unlock();
         }
+    }
+
+    @Override
+    @Deprecated
+    public StoredProfile loadProfile(UUID uuid) {
+        return loadProfile(uuid, false);
     }
 
     @Override
