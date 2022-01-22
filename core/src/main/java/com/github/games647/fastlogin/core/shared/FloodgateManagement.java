@@ -81,6 +81,22 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         }
 
         profile = core.getStorage().loadProfile(username);
+        if (!profile.isSaved()) {
+            // linked players are stored as Java (= not Floodgate) players
+            profile.setFloodgate(!isLinked);
+        } else {
+            if (!profile.isFloodgate() && !isLinked) {
+                core.getPlugin().getLog().warn("Player {} is already stored by FastLogin as a Java Edition player",
+                        username);
+                return;
+            } else if (profile.isFloodgate() && isLinked) {
+                core.getPlugin().getLog()
+                        .warn("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
+                                username);
+                return;
+            }
+        }
+
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
 
         try {
@@ -126,7 +142,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         //logging in from bedrock for a second time threw an error with UUID
         if (profile == null) {
-            profile = new StoredProfile(getUUID(player), username, true, getAddress(player).toString());
+            profile = new StoredProfile(getUUID(player), username, true, true, getAddress(player).toString());
         }
 
         //start Bukkit/Bungee specific tasks
