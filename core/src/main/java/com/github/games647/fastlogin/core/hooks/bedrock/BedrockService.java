@@ -73,6 +73,7 @@ public abstract class BedrockService<B> {
             core.getPlugin().getLog().error(
                 "Could not check whether Bedrock Player {}'s name conflicts a premium Java player's name.",
                 username);
+            ioEx.printStackTrace();
 
             kickPlayer(source, username, "Could not check if your name conflicts an existing " +
                 "premium Java account's name. This is usually a serverside error.");
