@@ -80,7 +80,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             return;
         }
 
-        profile = core.getStorage().loadProfile(username);
+        profile = core.getStorage().loadProfile(username, true);
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
 
         try {
@@ -126,7 +126,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         //logging in from bedrock for a second time threw an error with UUID
         if (profile == null) {
-            profile = new StoredProfile(getUUID(player), username, true, getAddress(player).toString());
+            profile = new StoredProfile(getUUID(player), username, true, true, getAddress(player).toString());
         }
 
         //start Bukkit/Bungee specific tasks

@@ -50,17 +50,21 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
 
     public void onLogin(String username, S source) {
         core.getPlugin().getLog().info("Handling player {}", username);
-        StoredProfile profile = core.getStorage().loadProfile(username);
-        if (profile == null) {
-            return;
-        }
 
         //check if the player is connecting through Bedrock Edition
         if (bedrockService != null && bedrockService.isBedrockConnection(username)) {
-            //perform Bedrock specific checks and skip Java checks, if they are not needed
+            //perform Bedrock specific checks
             if (bedrockService.performChecks(username, source)) {
+                //skip Java checks, since they are not needed
                 return;
             }
+        }
+
+        StoredProfile profile = core.getStorage().loadProfile(username, false);
+
+        //can't be a premium Java player, if it's not saved in the database
+        if (profile == null) {
+            return;
         }
 
         callFastLoginPreLoginEvent(username, source, profile);
@@ -138,7 +142,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     private boolean checkNameChange(S source, String username, Profile profile) {
         //user not exists in the db
         if (core.getConfig().get("nameChangeCheck", false)) {
-            StoredProfile storedProfile = core.getStorage().loadProfile(profile.getId());
+            StoredProfile storedProfile = core.getStorage().loadProfile(profile.getId(), false);
             if (storedProfile != null) {
                 //uuid exists in the database
                 core.getPlugin().getLog().info("GameProfile {} changed it's username", profile);
