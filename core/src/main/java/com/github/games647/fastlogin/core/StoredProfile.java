@@ -39,20 +39,33 @@ public class StoredProfile extends Profile {
     private final ReentrantLock saveLock = new ReentrantLock();
 
     private boolean premium;
+    private boolean floodgate;
     private String lastIp;
     private Instant lastLogin;
 
-    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
+    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, boolean floodgate, String lastIp,
+            Instant lastLogin) {
         super(uuid, playerName);
 
         this.rowId = rowId;
         this.premium = premium;
+        this.floodgate = floodgate;
         this.lastIp = lastIp;
         this.lastLogin = lastLogin;
     }
 
+    @Deprecated
+    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, String lastIp, Instant lastLogin) {
+        this(rowId, uuid, playerName, premium, false, lastIp, lastLogin);
+    }
+
+    public StoredProfile(UUID uuid, String playerName, boolean premium, boolean isFloodgate, String lastIp) {
+        this(-1, uuid, playerName, premium, isFloodgate, lastIp, Instant.now());
+    }
+
+    @Deprecated
     public StoredProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
-        this(-1, uuid, playerName, premium, lastIp, Instant.now());
+        this(-1, uuid, playerName, premium, false, lastIp, Instant.now());
     }
 
     public ReentrantLock getSaveLock() {
@@ -96,6 +109,14 @@ public class StoredProfile extends Profile {
         this.premium = premium;
     }
 
+    public synchronized boolean isFloodgate() {
+        return floodgate;
+    }
+
+    public synchronized void setFloodgate(boolean floodgate) {
+        this.floodgate = floodgate;
+    }
+
     public synchronized String getLastIp() {
         return lastIp;
     }
@@ -132,6 +153,7 @@ public class StoredProfile extends Profile {
         return this.getClass().getSimpleName() + '{' +
                 "rowId=" + rowId +
                 ", premium=" + premium +
+                ", floodgate=" + floodgate +
                 ", lastIp='" + lastIp + '\'' +
                 ", lastLogin=" + lastLogin +
                 "} " + super.toString();
