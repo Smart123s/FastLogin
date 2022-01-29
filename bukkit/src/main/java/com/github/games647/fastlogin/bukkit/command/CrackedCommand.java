@@ -57,12 +57,21 @@ public class CrackedCommand extends ToggleCommand {
             return;
         }
 
+        boolean isFloodgate = false;
+        if (plugin.getFloodgateService() != null) {
+            // getting the uuid from CommandSender is complicated and unnecessary, because
+            // there can't be two players online with the same name
+            if (plugin.getFloodgateService().isBedrockConnection(sender.getName())) {
+                isFloodgate = true;
+            }
+        }
+
         if (forwardCrackedCommand(sender, sender.getName())) {
             return;
         }
 
         // todo: load async if
-        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName(), isFloodgate);
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
