@@ -254,6 +254,14 @@
             </exclusions>
         </dependency>
 
+        <!--MockBukkit for testing-->
+        <dependency>
+            <groupId>com.github.seeseemelk</groupId>
+            <artifactId>MockBukkit-v1.18</artifactId>
+            <version>1.18.1</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--Login Plugins-->
         <dependency>
             <groupId>fr.xephi</groupId>
