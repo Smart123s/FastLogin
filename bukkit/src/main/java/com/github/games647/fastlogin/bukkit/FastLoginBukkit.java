@@ -44,6 +44,7 @@ import com.github.games647.fastlogin.core.shared.PlatformPlugin;
 
 import io.papermc.lib.PaperLib;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.Map;
@@ -55,8 +56,10 @@ import java.util.concurrent.ConcurrentMap;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.geyser.GeyserImpl;
 import org.slf4j.Logger;
@@ -85,12 +88,25 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         this.scheduler = new BukkitScheduler(this, logger, getThreadFactory());
     }
 
+    /**
+     * For MockBukkit
+     */
+    protected FastLoginBukkit(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file)
+    {
+        super(loader, description, dataFolder, file);
+        //this is duplicate code from the other constructor
+        this.logger = CommonUtil.initializeLoggerService(getLogger());
+        this.scheduler = new BukkitScheduler(this, logger, getThreadFactory());
+    }
+
     @Override
     public void onEnable() {
         core = new FastLoginCore<>(this);
         core.load();
 
-        if (getServer().getOnlineMode()) {
+        //todo: isJUnitTest() should be removed
+        //https://github.com/MockBukkit/MockBukkit/blob/216e15eb72da6b19e49e5ea78cf1c675f008b5f2/src/main/java/be/seeseemelk/mockbukkit/ServerMock.java#L1103-L1108
+        if (!isJUnitTest() && getServer().getOnlineMode()) {
             //we need to require offline to prevent a loginSession request for an offline player
             logger.error("Server has to be in offline mode");
             setEnabled(false);
@@ -330,4 +346,17 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                     + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
     	}
     }
+
+    //https://stackoverflow.com/a/12717377/9767089
+    /**
+     * Detect, if the code is being ran by JUnit
+     */
+    public static boolean isJUnitTest() {  
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+          if (element.getClassName().startsWith("org.junit.")) {
+            return true;
+          }           
+        }
+        return false;
+      }
 }
