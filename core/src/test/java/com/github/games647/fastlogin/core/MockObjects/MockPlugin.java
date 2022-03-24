@@ -29,12 +29,17 @@ import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class MockPlugin implements PlatformPlugin<MockCommandSender> {
 
@@ -42,9 +47,15 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
 
     private static final Logger log = LoggerFactory.getLogger("FastLoginTest");
     private final FastLoginCore<MockPlayer, MockCommandSender, MockPlugin> core;
+    private final Configuration config;
 
-    public MockPlugin() {
+    public MockPlugin() throws IOException {
         core = Mockito.spy(new FastLoginCore<>(this));
+
+        // load default config
+        File configfile = new File(Objects.requireNonNull(getClass().getResource("/config.yml")).getPath());
+        YamlConfiguration provider = (YamlConfiguration) ConfigurationProvider.getProvider(YamlConfiguration.class);
+        config = provider.load(configfile);
     }
 
     @Override
@@ -82,6 +93,10 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
 
     public FastLoginCore<MockPlayer, MockCommandSender, MockPlugin> getCore() {
         return core;
+    }
+
+    public Configuration getConfig() {
+        return config;
     }
 
 }

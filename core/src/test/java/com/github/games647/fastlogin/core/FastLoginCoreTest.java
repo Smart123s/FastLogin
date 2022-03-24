@@ -27,9 +27,13 @@ package com.github.games647.fastlogin.core;
 
 import com.github.games647.fastlogin.core.MockObjects.MockPlugin;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FastLoginCoreTest {
 
@@ -39,8 +43,15 @@ public class FastLoginCoreTest {
     public MockPlugin plugin;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         this.plugin = Mockito.spy(new MockPlugin());
+    }
+
+    @Test
+    public void testDefaultConfigLoaded() {
+        assertNull("Key 'asd' is not present in config.yml", plugin.getConfig().get("asd"));
+        assertTrue("autoLogin should be true if the default config is loaded",
+                plugin.getConfig().getBoolean("autoLogin"));
     }
 
 }
