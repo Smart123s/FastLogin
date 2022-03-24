@@ -26,9 +26,12 @@
 package com.github.games647.fastlogin.core.MockObjects;
 
 import com.github.games647.fastlogin.core.AsyncScheduler;
+import com.github.games647.fastlogin.core.RateLimiter;
+import com.github.games647.fastlogin.core.TickingRateLimiter;
 import com.github.games647.fastlogin.core.hooks.bedrock.BedrockService;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.github.games647.fastlogin.core.shared.PlatformPlugin;
+import com.google.common.base.Ticker;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -56,6 +59,10 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
         File configfile = new File(Objects.requireNonNull(getClass().getResource("/config.yml")).getPath());
         YamlConfiguration provider = (YamlConfiguration) ConfigurationProvider.getProvider(YamlConfiguration.class);
         config = provider.load(configfile);
+
+        // rate limiter
+        RateLimiter rateLimiter = new TickingRateLimiter(Ticker.systemTicker(), 600, 10);
+        Mockito.when(core.getRateLimiter()).thenReturn(rateLimiter);
     }
 
     @Override
