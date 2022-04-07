@@ -59,17 +59,16 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
         StoredProfile playerProfile = session.getProfile();
         try {
             if (isOnlineMode()) {
-                //premium player
+                // premium player
                 AuthPlugin<P> authPlugin = core.getAuthPluginHook();
                 if (authPlugin == null) {
-                    //maybe only bungeecord plugin
+                    // maybe only bungeecord plugin
                     onForceActionSuccess(session);
                 } else {
                     boolean success = true;
                     String playerName = getName(player);
                     if (core.getConfig().get("autoLogin", true)) {
-                        if (session.needsRegistration()
-                                || (core.getConfig().get("auto-register-unknown", false)
+                        if (session.needsRegistration() || (core.getConfig().get("auto-register-unknown", false)
                                 && !authPlugin.isRegistered(playerName))) {
                             success = forceRegister(player);
                         } else if (!callFastLoginAutoLoginEvent(session, playerProfile).isCancelled()) {
@@ -78,7 +77,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                     }
 
                     if (success) {
-                        //update only on success to prevent corrupt data
+                        // update only on success to prevent corrupt data
                         if (playerProfile != null) {
                             playerProfile.setId(session.getUuid());
                             playerProfile.setPremium(true);
@@ -89,7 +88,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
                     }
                 }
             } else if (playerProfile != null) {
-                //cracked player
+                // cracked player
                 playerProfile.setId(null);
                 playerProfile.setPremium(false);
                 storage.save(playerProfile);

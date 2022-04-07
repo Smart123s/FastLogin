@@ -92,12 +92,7 @@ public abstract class LoginSession {
 
     @Override
     public synchronized String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("profile", profile)
-                .add("requestUsername", requestUsername)
-                .add("username", username)
-                .add("uuid", uuid)
-                .add("registered", registered)
-                .toString();
+        return MoreObjects.toStringHelper(this).add("profile", profile).add("requestUsername", requestUsername)
+                .add("username", username).add("uuid", uuid).add("registered", registered).toString();
     }
 }

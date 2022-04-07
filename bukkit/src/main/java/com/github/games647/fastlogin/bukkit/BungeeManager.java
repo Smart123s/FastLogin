@@ -55,7 +55,7 @@ public class BungeeManager {
     private static final String LEGACY_FILE_NAME = "proxy-whitelist.txt";
     private static final String FILE_NAME = "allowed-proxies.txt";
 
-    //null if proxies allowed list is empty so bungeecord support is disabled
+    // null if proxies allowed list is empty so bungeecord support is disabled
     private Set<UUID> proxyIds;
 
     private final FastLoginBukkit plugin;
@@ -68,7 +68,7 @@ public class BungeeManager {
     }
 
     public void cleanup() {
-        //remove old blocked status
+        // remove old blocked status
         Bukkit.getOnlinePlayers().forEach(player -> player.removeMetadata(plugin.getName(), plugin));
     }
 
@@ -103,7 +103,7 @@ public class BungeeManager {
         try {
             return Class.forName(className).getDeclaredField(fieldName).getBoolean(null);
         } catch (ClassNotFoundException notFoundEx) {
-            //ignore server has no proxy support
+            // ignore server has no proxy support
         } catch (NoSuchFieldException | IllegalAccessException noSuchFieldException) {
             plugin.getLog().warn("Cannot access proxy field", noSuchFieldException);
         }
@@ -147,9 +147,7 @@ public class BungeeManager {
 
             Files.deleteIfExists(legacyFile);
             try (Stream<String> lines = Files.lines(proxiesFile)) {
-                return lines.map(String::trim)
-                        .map(UUID::fromString)
-                        .collect(toSet());
+                return lines.map(String::trim).map(UUID::fromString).collect(toSet());
             }
         } catch (IOException ex) {
             plugin.getLog().error("Failed to read proxies", ex);
@@ -178,8 +176,8 @@ public class BungeeManager {
      * BungeeCord messages after the PlayerJoinEvent fires including the delay.
      *
      * If the join event fired, the delay exceeded, but it ran earlier and couldn't find the recently started login
-     * session. If not fired, we can start a new force login task. This will still match the requirement that we wait
-     * a certain time after the player join event fired.
+     * session. If not fired, we can start a new force login task. This will still match the requirement that we wait a
+     * certain time after the player join event fired.
      *
      * @param player joining player
      * @return event fired including delay

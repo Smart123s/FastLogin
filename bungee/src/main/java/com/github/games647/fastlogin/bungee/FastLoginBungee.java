@@ -98,14 +98,14 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
             geyserService = new GeyserService(GeyserImpl.getInstance(), core);
         }
 
-        //events
+        // events
         PluginManager pluginManager = getProxy().getPluginManager();
 
         ConnectListener connectListener = new ConnectListener(this, core.getRateLimiter());
         pluginManager.registerListener(this, connectListener);
         pluginManager.registerListener(this, new PluginMessageListener(this));
 
-        //this is required to listen to incoming messages from the server
+        // this is required to listen to incoming messages from the server
         getProxy().registerChannel(NamespaceKey.getCombined(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
         getProxy().registerChannel(NamespaceKey.getCombined(getName(), SuccessMessage.SUCCESS_CHANNEL));
 
@@ -129,18 +129,17 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
 
     private void registerHook() {
         try {
-            List<Class<? extends AuthPlugin<ProxiedPlayer>>> hooks = Arrays.asList(
-                    BungeeAuthHook.class, BungeeCordAuthenticatorBungeeHook.class, SodionAuthHook.class);
+            List<Class<? extends AuthPlugin<ProxiedPlayer>>> hooks = Arrays.asList(BungeeAuthHook.class,
+                    BungeeCordAuthenticatorBungeeHook.class, SodionAuthHook.class);
 
             for (Class<? extends AuthPlugin<ProxiedPlayer>> clazz : hooks) {
                 String pluginName = clazz.getSimpleName();
                 pluginName = pluginName.substring(0, pluginName.length() - "Hook".length());
-                //uses only member classes which uses AuthPlugin interface (skip interfaces)
+                // uses only member classes which uses AuthPlugin interface (skip interfaces)
                 Plugin plugin = getProxy().getPluginManager().getPlugin(pluginName);
                 if (plugin != null) {
                     logger.info("Hooking into auth plugin: {}", pluginName);
-                    core.setAuthPluginHook(
-                            clazz.getDeclaredConstructor(FastLoginBungee.class).newInstance(this));
+                    core.setAuthPluginHook(clazz.getDeclaredConstructor(FastLoginBungee.class).newInstance(this));
                     break;
                 }
             }
@@ -182,12 +181,9 @@ public class FastLoginBungee extends Plugin implements PlatformPlugin<CommandSen
     @Override
     @SuppressWarnings("deprecation")
     public ThreadFactory getThreadFactory() {
-        return new ThreadFactoryBuilder()
-                .setNameFormat(getName() + " Pool Thread #%1$d")
-                //Hikari create daemons by default
-                .setDaemon(true)
-                .setThreadFactory(new GroupedThreadFactory(this, getName()))
-                .build();
+        return new ThreadFactoryBuilder().setNameFormat(getName() + " Pool Thread #%1$d")
+                // Hikari create daemons by default
+                .setDaemon(true).setThreadFactory(new GroupedThreadFactory(this, getName())).build();
     }
 
     @Override

@@ -40,8 +40,7 @@ import com.velocitypowered.api.proxy.Player;
 
 import java.util.concurrent.ExecutionException;
 
-public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, VelocityLoginSource>
-        implements Runnable {
+public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, VelocityLoginSource> implements Runnable {
 
     private final FastLoginVelocity plugin;
     private final String username;
@@ -49,7 +48,8 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
     private final PreLoginEvent preLoginEvent;
     private final InboundConnection connection;
 
-    public AsyncPremiumCheck(FastLoginVelocity plugin, InboundConnection connection, String username, Continuation continuation, PreLoginEvent preLoginEvent) {
+    public AsyncPremiumCheck(FastLoginVelocity plugin, InboundConnection connection, String username,
+            Continuation continuation, PreLoginEvent preLoginEvent) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
         this.plugin = plugin;
         this.connection = connection;
@@ -69,7 +69,8 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
     }
 
     @Override
-    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, VelocityLoginSource source, StoredProfile profile) {
+    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, VelocityLoginSource source,
+            StoredProfile profile) {
         VelocityFastLoginPreLoginEvent event = new VelocityFastLoginPreLoginEvent(username, source, profile);
         try {
             return plugin.getProxy().getEventManager().fire(event).get();
@@ -83,10 +84,11 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
     }
 
     @Override
-    public void requestPremiumLogin(VelocityLoginSource source, StoredProfile profile,
-                                    String username, boolean registered) {
+    public void requestPremiumLogin(VelocityLoginSource source, StoredProfile profile, String username,
+            boolean registered) {
         source.enableOnlinemode();
-        plugin.getSession().put(source.getConnection().getRemoteAddress(), new VelocityLoginSession(username, registered, profile));
+        plugin.getSession().put(source.getConnection().getRemoteAddress(),
+                new VelocityLoginSession(username, registered, profile));
 
         String ip = source.getAddress().getAddress().getHostAddress();
         plugin.getCore().getPendingLogin().put(ip + username, new Object());
@@ -94,6 +96,7 @@ public class AsyncPremiumCheck extends JoinManagement<Player, CommandSource, Vel
 
     @Override
     public void startCrackedSession(VelocityLoginSource source, StoredProfile profile, String username) {
-        plugin.getSession().put(source.getConnection().getRemoteAddress(), new VelocityLoginSession(username, false, profile));
+        plugin.getSession().put(source.getConnection().getRemoteAddress(),
+                new VelocityLoginSession(username, false, profile));
     }
 }

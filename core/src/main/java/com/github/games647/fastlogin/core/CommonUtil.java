@@ -71,12 +71,12 @@ public class CommonUtil {
     }
 
     /**
-     * This creates a SLF4J logger. In the process it initializes the SLF4J service provider. This method looks
-     * for the provider in the plugin jar instead of in the server jar when creating a Logger. The provider is only
-     * initialized once, so this method should be called early.
+     * This creates a SLF4J logger. In the process it initializes the SLF4J service provider. This method looks for the
+     * provider in the plugin jar instead of in the server jar when creating a Logger. The provider is only initialized
+     * once, so this method should be called early.
      *
-     * The provider is bound to the service class `SLF4JServiceProvider`. Relocating this class makes it available
-     * for exclusive own usage. Other dependencies will use the relocated service too, and therefore will find the
+     * The provider is bound to the service class `SLF4JServiceProvider`. Relocating this class makes it available for
+     * exclusive own usage. Other dependencies will use the relocated service too, and therefore will find the
      * initialized provider.
      *
      * @param parent JDK logger
@@ -109,6 +109,6 @@ public class CommonUtil {
     }
 
     private CommonUtil() {
-        //Utility class
+        // Utility class
     }
 }

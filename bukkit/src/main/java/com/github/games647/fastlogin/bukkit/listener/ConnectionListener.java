@@ -44,8 +44,8 @@ import org.bukkit.metadata.Metadatable;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 /**
- * This listener tells authentication plugins weather the player has a premium account. So the
- * plugin can skip authentication.
+ * This listener tells authentication plugins weather the player has a premium account. So the plugin can skip
+ * authentication.
  */
 public class ConnectionListener implements Listener {
 

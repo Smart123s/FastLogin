@@ -44,8 +44,8 @@ public class AsyncToggleMessage implements Runnable {
     private final boolean toPremium;
     private final boolean isPlayerSender;
 
-    public AsyncToggleMessage(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,
-             ProxiedPlayer sender, String playerName, boolean toPremium, boolean playerSender) {
+    public AsyncToggleMessage(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core, ProxiedPlayer sender,
+            String playerName, boolean toPremium, boolean playerSender) {
         this.core = core;
         this.sender = sender;
         this.targetPlayer = playerName;
@@ -64,7 +64,7 @@ public class AsyncToggleMessage implements Runnable {
 
     private void turnOffPremium() {
         StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
-        //existing player is already cracked
+        // existing player is already cracked
         if (playerProfile.isSaved() && !playerProfile.isPremium()) {
             sendMessage("not-premium");
             return;
@@ -73,10 +73,11 @@ public class AsyncToggleMessage implements Runnable {
         playerProfile.setPremium(false);
         playerProfile.setId(null);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
-        core.getPlugin().getProxy().getPluginManager().callEvent(
-                new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
+        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName()))
+                ? PremiumToggleReason.COMMAND_OTHER
+                : PremiumToggleReason.COMMAND_SELF;
+        core.getPlugin().getProxy().getPluginManager()
+                .callEvent(new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("remove-premium");
     }
 
@@ -89,10 +90,11 @@ public class AsyncToggleMessage implements Runnable {
 
         playerProfile.setPremium(true);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
-        core.getPlugin().getProxy().getPluginManager().callEvent(
-                new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
+        PremiumToggleReason reason = (!isPlayerSender || !sender.getName().equalsIgnoreCase(playerProfile.getName()))
+                ? PremiumToggleReason.COMMAND_OTHER
+                : PremiumToggleReason.COMMAND_SELF;
+        core.getPlugin().getProxy().getPluginManager()
+                .callEvent(new BungeeFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("add-premium");
     }
 

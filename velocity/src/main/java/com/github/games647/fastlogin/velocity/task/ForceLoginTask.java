@@ -48,12 +48,12 @@ public class ForceLoginTask
 
     private final RegisteredServer server;
 
-    //treat player as if they had a premium account, even when they don't
-    //used for Floodgate auto login/register
+    // treat player as if they had a premium account, even when they don't
+    // used for Floodgate auto login/register
     private final boolean forcedOnlineMode;
 
-    public ForceLoginTask(FastLoginCore<Player, CommandSource, FastLoginVelocity> core,
-                          Player player, RegisteredServer server, VelocityLoginSession session, boolean forcedOnlineMode) {
+    public ForceLoginTask(FastLoginCore<Player, CommandSource, FastLoginVelocity> core, Player player,
+            RegisteredServer server, VelocityLoginSession session, boolean forcedOnlineMode) {
         super(core, player, session);
 
         this.server = server;
@@ -61,7 +61,7 @@ public class ForceLoginTask
     }
 
     public ForceLoginTask(FastLoginCore<Player, CommandSource, FastLoginVelocity> core, Player player,
-                          RegisteredServer server, VelocityLoginSession session) {
+            RegisteredServer server, VelocityLoginSession session) {
         this(core, player, server, session, false);
     }
 
@@ -91,7 +91,7 @@ public class ForceLoginTask
     public FastLoginAutoLoginEvent callFastLoginAutoLoginEvent(LoginSession session, StoredProfile profile) {
         VelocityFastLoginAutoLoginEvent event = new VelocityFastLoginAutoLoginEvent(session, profile);
         try {
-             return core.getPlugin().getProxy().getEventManager().fire(event).get();
+            return core.getPlugin().getProxy().getEventManager().fire(event).get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Set the interrupt flag again
             return event;
@@ -108,7 +108,7 @@ public class ForceLoginTask
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        //sub channel name
+        // sub channel name
         Type type = Type.LOGIN;
         if (session.needsRegistration()) {
             type = Type.REGISTER;

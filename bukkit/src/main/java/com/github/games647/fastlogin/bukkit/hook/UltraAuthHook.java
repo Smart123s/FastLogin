@@ -53,7 +53,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceLogin(Player player) {
-        //not thread-safe
+        // not thread-safe
         Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
             if (UltraAuthAPI.isAuthenticated(player)) {
                 plugin.getLog().warn(ALREADY_AUTHENTICATED, player);
@@ -80,7 +80,7 @@ public class UltraAuthHook implements AuthPlugin<Player> {
     @Override
     public boolean forceRegister(Player player, String password) {
         UltraAuthAPI.setPlayerPasswordOnline(player, password);
-        //the register method silents any exception so check if our entry was saved
+        // the register method silents any exception so check if our entry was saved
         return PlayerManager.getInstance().checkPlayerPassword(player, password) && forceLogin(player);
     }
 }

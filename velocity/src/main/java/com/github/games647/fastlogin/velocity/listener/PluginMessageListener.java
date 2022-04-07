@@ -54,8 +54,10 @@ public class PluginMessageListener {
     public PluginMessageListener(FastLoginVelocity plugin) {
         this.plugin = plugin;
 
-        this.successChannel = MinecraftChannelIdentifier.create(plugin.getName(), SuccessMessage.SUCCESS_CHANNEL).getId();
-        this.changeChannel = MinecraftChannelIdentifier.create(plugin.getName(), ChangePremiumMessage.CHANGE_CHANNEL).getId();
+        this.successChannel = MinecraftChannelIdentifier.create(plugin.getName(), SuccessMessage.SUCCESS_CHANNEL)
+                .getId();
+        this.changeChannel = MinecraftChannelIdentifier.create(plugin.getName(), ChangePremiumMessage.CHANGE_CHANNEL)
+                .getId();
     }
 
     @Subscribe
@@ -65,16 +67,16 @@ public class PluginMessageListener {
             return;
         }
 
-        //the client shouldn't be able to read the messages in order to know something about server internal states
-        //moreover the client shouldn't be able fake a running premium check by sending the result message
+        // the client shouldn't be able to read the messages in order to know something about server internal states
+        // moreover the client shouldn't be able fake a running premium check by sending the result message
         pluginMessageEvent.setResult(PluginMessageEvent.ForwardResult.handled());
 
         if (!(pluginMessageEvent.getSource() instanceof ServerConnection)) {
-            //check if the message is sent from the server
+            // check if the message is sent from the server
             return;
         }
 
-        //so that we can safely process this in the background
+        // so that we can safely process this in the background
         byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
         Player forPlayer = (Player) pluginMessageEvent.getTarget();
 
@@ -94,7 +96,8 @@ public class PluginMessageListener {
             String playerName = changeMessage.getPlayerName();
             boolean isSourceInvoker = changeMessage.isSourceInvoker();
             if (changeMessage.shouldEnable()) {
-                if (playerName.equals(forPlayer.getUsername()) && plugin.getCore().getConfig().get("premium-warning", true)
+                if (playerName.equals(forPlayer.getUsername())
+                        && plugin.getCore().getConfig().get("premium-warning", true)
                         && !core.getPendingConfirms().contains(forPlayer.getUniqueId())) {
                     String message = core.getMessage("premium-warning");
                     forPlayer.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
@@ -113,9 +116,9 @@ public class PluginMessageListener {
     }
 
     private void onSuccessMessage(Player forPlayer) {
-        if (forPlayer.isOnlineMode()){
-            //bukkit module successfully received and force logged in the user
-            //update only on success to prevent corrupt data
+        if (forPlayer.isOnlineMode()) {
+            // bukkit module successfully received and force logged in the user
+            // update only on success to prevent corrupt data
             VelocityLoginSession loginSession = plugin.getSession().get(forPlayer.getRemoteAddress());
             StoredProfile playerProfile = loginSession.getProfile();
             loginSession.setRegistered(true);

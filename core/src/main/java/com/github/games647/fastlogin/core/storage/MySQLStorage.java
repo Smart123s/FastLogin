@@ -31,10 +31,8 @@ import com.zaxxer.hikari.HikariConfig;
 public class MySQLStorage extends SQLStorage {
 
     public MySQLStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String database,
-                        HikariConfig config,boolean useSSL) {
-        super(core,
-                buildJDBCUrl(driver, host, port, database),
-                setParams(config, useSSL));
+            HikariConfig config, boolean useSSL) {
+        super(core, buildJDBCUrl(driver, host, port, database), setParams(config, useSSL));
     }
 
     private static String buildJDBCUrl(String driver, String host, int port, String database) {

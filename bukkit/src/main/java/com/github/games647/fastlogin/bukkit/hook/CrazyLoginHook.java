@@ -65,16 +65,18 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
 
     @Override
     public boolean forceLogin(Player player) {
-        //not thread-safe operation
+        // not thread-safe operation
         Future<Optional<LoginPlayerData>> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> {
             LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player);
             if (playerData != null) {
-                //mark the account as logged in
+                // mark the account as logged in
                 playerData.setLoggedIn(true);
 
                 String ip = player.getAddress().getAddress().getHostAddress();
-//this should be done after login to restore the inventory, show players, prevent potential memory leaks...
-//from: https://github.com/ST-DDT/CrazyLogin/blob/master/src/main/java/de/st_ddt/crazylogin/CrazyLogin.java#L1948
+                // this should be done after login to restore the inventory, show players, prevent potential memory
+                // leaks...
+                // from:
+                // https://github.com/ST-DDT/CrazyLogin/blob/master/src/main/java/de/st_ddt/crazylogin/CrazyLogin.java#L1948
                 playerData.resetLoginFails();
                 player.setFireTicks(0);
 
@@ -85,9 +87,9 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
                     playerListener.unhidePlayer(player);
                 }
 
-//loginFailuresPerIP.remove(IP);
-//illegalCommandUsesPerIP.remove(IP);
-//tempBans.remove(IP);
+                // loginFailuresPerIP.remove(IP);
+                // illegalCommandUsesPerIP.remove(IP);
+                // tempBans.remove(IP);
                 playerData.addIP(ip);
                 player.setMetadata("Authenticated", new Authenticated(crazyLoginPlugin, player));
                 crazyLoginPlugin.unregisterDynamicHooks();
@@ -100,7 +102,7 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
         try {
             Optional<LoginPlayerData> result = future.get().filter(LoginPlayerData::isLoggedIn);
             if (result.isPresent()) {
-                //SQL-Queries should run async
+                // SQL-Queries should run async
                 crazyLoginPlugin.getCrazyDatabase().saveWithoutPassword(result.get());
                 return true;
             }
@@ -121,12 +123,12 @@ public class CrazyLoginHook implements AuthPlugin<Player> {
     public boolean forceRegister(Player player, String password) {
         CrazyLoginDataDatabase crazyDatabase = crazyLoginPlugin.getCrazyDatabase();
 
-        //this executes a sql query and accesses only thread safe collections, so we can run it async
+        // this executes a sql query and accesses only thread safe collections, so we can run it async
         LoginPlayerData playerData = crazyLoginPlugin.getPlayerData(player.getName());
         if (playerData == null) {
-            //create a fake account - this will be saved to the database with the password=FAILEDLOADING
-            //user cannot log in with that password unless the admin uses plain text
-            //this automatically marks the player as logged in
+            // create a fake account - this will be saved to the database with the password=FAILEDLOADING
+            // user cannot log in with that password unless the admin uses plain text
+            // this automatically marks the player as logged in
             crazyDatabase.save(new LoginPlayerData(player));
             return forceLogin(player);
         }

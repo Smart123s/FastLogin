@@ -57,11 +57,9 @@ public interface PlatformPlugin<C> {
     BedrockService<?> getBedrockService();
 
     default ThreadFactory getThreadFactory() {
-        return new ThreadFactoryBuilder()
-                .setNameFormat(getName() + " Pool Thread #%1$d")
+        return new ThreadFactoryBuilder().setNameFormat(getName() + " Pool Thread #%1$d")
                 // Hikari create daemons by default and we could daemon threads for our own scheduler too
                 // because we safely shutdown
-                .setDaemon(true)
-                .build();
+                .setDaemon(true).build();
     }
 }

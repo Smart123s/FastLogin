@@ -49,12 +49,12 @@ public class ForceLoginTask
 
     private final Server server;
 
-    //treat player as if they had a premium account, even when they don't
-    //use for Floodgate auto login/register
+    // treat player as if they had a premium account, even when they don't
+    // use for Floodgate auto login/register
     private final boolean forcedOnlineMode;
 
-    public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core,
-                          ProxiedPlayer player, Server server, BungeeLoginSession session, boolean forcedOnlineMode) {
+    public ForceLoginTask(FastLoginCore<ProxiedPlayer, CommandSender, FastLoginBungee> core, ProxiedPlayer player,
+            Server server, BungeeLoginSession session, boolean forcedOnlineMode) {
         super(core, player, session);
 
         this.server = server;
@@ -102,7 +102,7 @@ public class ForceLoginTask
 
     @Override
     public void onForceActionSuccess(LoginSession session) {
-        //sub channel name
+        // sub channel name
         Type type = Type.LOGIN;
         if (session.needsRegistration()) {
             type = Type.REGISTER;

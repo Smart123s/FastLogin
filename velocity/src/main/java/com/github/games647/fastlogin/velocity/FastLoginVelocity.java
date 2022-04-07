@@ -65,8 +65,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.Logger;
 
 //TODO: Support for floodgate
-@Plugin(id = PomData.NAME, name = PomData.DISPLAY_NAME, description = PomData.DESCRIPTION, url = PomData.URL,
-        version = PomData.VERSION, authors = {"games647", "https://github.com/games647/FastLogin/graphs/contributors"})
+@Plugin(id = PomData.NAME, name = PomData.DISPLAY_NAME, description = PomData.DESCRIPTION, url = PomData.URL, version = PomData.VERSION, authors = {
+        "games647", "https://github.com/games647/FastLogin/graphs/contributors" })
 public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
     private final ProxyServer server;
@@ -98,8 +98,10 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
 
         server.getEventManager().register(this, new ConnectListener(this, core.getRateLimiter()));
         server.getEventManager().register(this, new PluginMessageListener(this));
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
+        server.getChannelRegistrar()
+                .register(MinecraftChannelIdentifier.create(getName(), ChangePremiumMessage.CHANGE_CHANNEL));
+        server.getChannelRegistrar()
+                .register(MinecraftChannelIdentifier.create(getName(), SuccessMessage.SUCCESS_CHANNEL));
     }
 
     @Subscribe
@@ -182,7 +184,8 @@ public class FastLoginVelocity implements PlatformPlugin<CommandSource> {
                 logger.error("Unable to load proxy id from '{}'", idFile.toAbsolutePath());
                 logger.error("Detailed exception:", e);
             } catch (IllegalArgumentException e) {
-                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.", idFile.toAbsolutePath());
+                logger.error("'{}' contains an invalid uuid! FastLogin will not work without a valid id.",
+                        idFile.toAbsolutePath());
             }
         } else {
             shouldGenerate = true;

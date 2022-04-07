@@ -46,7 +46,7 @@ public class LoginActionMessage implements ChannelMessage {
     }
 
     public LoginActionMessage() {
-        //reading mode
+        // reading mode
     }
 
     public Type getType() {
@@ -67,7 +67,7 @@ public class LoginActionMessage implements ChannelMessage {
 
         this.playerName = input.readUTF();
 
-        //bungeecord UUID
+        // bungeecord UUID
         long mostSignificantBits = input.readLong();
         long leastSignificantBits = input.readLong();
         this.proxyId = new UUID(mostSignificantBits, leastSignificantBits);
@@ -77,10 +77,10 @@ public class LoginActionMessage implements ChannelMessage {
     public void writeTo(ByteArrayDataOutput output) {
         output.writeInt(type.ordinal());
 
-        //Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
+        // Data is sent through a random player. We have to tell the Bukkit version of this plugin the target
         output.writeUTF(playerName);
 
-        //proxy identifier to check if it's a acceptable proxy
+        // proxy identifier to check if it's a acceptable proxy
         output.writeLong(proxyId.getMostSignificantBits());
         output.writeLong(proxyId.getLeastSignificantBits());
     }
@@ -92,11 +92,8 @@ public class LoginActionMessage implements ChannelMessage {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "type='" + type + '\'' +
-                ", playerName='" + playerName + '\'' +
-                ", proxyId=" + proxyId +
-                '}';
+        return this.getClass().getSimpleName() + '{' + "type='" + type + '\'' + ", playerName='" + playerName + '\''
+                + ", proxyId=" + proxyId + '}';
     }
 
     public enum Type {

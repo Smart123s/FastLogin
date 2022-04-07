@@ -45,12 +45,12 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     private final FloodgatePlayer floodgatePlayer;
     private final String username;
 
-    //config.yml values that might be accessed by multiple methods
+    // config.yml values that might be accessed by multiple methods
     protected final String autoLoginFloodgate;
     protected final String autoRegisterFloodgate;
     protected final String allowNameConflict;
 
-    //variables initialized through run() and accesses by subclasss
+    // variables initialized through run() and accesses by subclasss
     protected boolean isRegistered;
     protected StoredProfile profile;
     protected boolean isLinked;
@@ -61,7 +61,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         this.floodgatePlayer = floodgatePlayer;
         this.username = getName(player);
 
-        //load values from config.yml
+        // load values from config.yml
         autoLoginFloodgate = core.getConfig().get("autoLoginFloodgate").toString().toLowerCase();
         autoRegisterFloodgate = core.getConfig().get("autoRegisterFloodgate").toString().toLowerCase();
         allowNameConflict = core.getConfig().get("allowFloodgateNameConflict").toString().toLowerCase();
@@ -71,11 +71,11 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     public void run() {
         core.getPlugin().getLog().info("Player {} is connecting through Geyser Floodgate.", username);
 
-        // check if the Bedrock player is linked to a Java account 
+        // check if the Bedrock player is linked to a Java account
         isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
-        //this happens on Bukkit if it's connected to Bungee
-        //if that's the case, players will be logged in via plugin messages
+        // this happens on Bukkit if it's connected to Bungee
+        // if that's the case, players will be logged in via plugin messages
         if (core.getStorage() == null) {
             return;
         }
@@ -84,7 +84,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
 
         try {
-            //maybe Bungee without auth plugin
+            // maybe Bungee without auth plugin
             if (authPlugin == null) {
                 if (profile != null) {
                     isRegistered = profile.isPremium();
@@ -95,13 +95,12 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                 isRegistered = authPlugin.isRegistered(username);
             }
         } catch (Exception ex) {
-            core.getPlugin().getLog().error(
-                    "An error has occured while checking if player {} is registered",
-                    username, ex);
+            core.getPlugin().getLog().error("An error has occured while checking if player {} is registered", username,
+                    ex);
             return;
         }
 
-        //decide if checks should be made for conflicting Java player names
+        // decide if checks should be made for conflicting Java player names
         if (isNameCheckRequired()) {
             // check for conflicting Premium Java name
             Optional<Profile> premiumUUID = Optional.empty();
@@ -114,7 +113,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                 return;
             }
 
-            //stop execution if player's name is conflicting
+            // stop execution if player's name is conflicting
             if (premiumUUID.isPresent()) {
                 return;
             }
@@ -124,45 +123,44 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             return;
         }
 
-        //logging in from bedrock for a second time threw an error with UUID
+        // logging in from bedrock for a second time threw an error with UUID
         if (profile == null) {
             profile = new StoredProfile(getUUID(player), username, true, getAddress(player).toString());
         }
 
-        //start Bukkit/Bungee specific tasks
+        // start Bukkit/Bungee specific tasks
         startLogin();
 
     }
 
     /**
      * Decide if the player can be automatically registered or logged in.<br>
-     * The config option 'non-conflicting' is ignored by this function, as name
-     * conflicts are checked by a different part of the code.
-     * 
-     * @param configValue the value of either 'autoLoginFloodgate' or
-     *                    'autoRegisterFloodgate' from config.yml
+     * The config option 'non-conflicting' is ignored by this function, as name conflicts are checked by a different
+     * part of the code.
+     *
+     * @param configValue the value of either 'autoLoginFloodgate' or 'autoRegisterFloodgate' from config.yml
      * @return true if the Player can be registered automatically
      */
     protected boolean isAutoAuthAllowed(String configValue) {
-        return "true".equals(configValue)
-                || "no-conflict".equals(configValue) // this was checked before
+        return "true".equals(configValue) || "no-conflict".equals(configValue) // this was checked before
                 || ("linked".equals(configValue) && isLinked);
     }
 
     /**
      * Decides wether checks for conflicting Java names should be made
+     *
      * @return ture if an API call to Mojang is needed
      */
     private boolean isNameCheckRequired() {
-        //linked players have the same name as their Java profile
-        //OR
-        //if allowNameConflict is 'false' or 'linked' and the player had a conflicting
-        //name, than they would have been kicked in FloodgateHook#checkNameConflict
+        // linked players have the same name as their Java profile
+        // OR
+        // if allowNameConflict is 'false' or 'linked' and the player had a conflicting
+        // name, than they would have been kicked in FloodgateHook#checkNameConflict
         if (isLinked || !"true".equals(allowNameConflict)) {
             return false;
         }
 
-        //autoRegisterFloodgate should only be checked if then player is not yet registered
+        // autoRegisterFloodgate should only be checked if then player is not yet registered
         if (!isRegistered && "no-conflict".equals(autoRegisterFloodgate)) {
             return true;
         }
@@ -171,8 +169,11 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
     }
 
     protected abstract void startLogin();
+
     protected abstract String getName(P player);
+
     protected abstract UUID getUUID(P player);
+
     protected abstract InetSocketAddress getAddress(P player);
 
 }

@@ -49,15 +49,11 @@ public abstract class SQLStorage implements AuthStorage {
 
     protected static final String PREMIUM_TABLE = "premium";
     protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
-            + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-            + "`UUID` CHAR(36), "
-            + "`Name` VARCHAR(16) NOT NULL, "
-            + "`Premium` BOOLEAN NOT NULL, "
-            + "`LastIp` VARCHAR(255) NOT NULL, "
+            + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, " + "`UUID` CHAR(36), " + "`Name` VARCHAR(16) NOT NULL, "
+            + "`Premium` BOOLEAN NOT NULL, " + "`LastIp` VARCHAR(255) NOT NULL, "
             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            //the premium shouldn't steal the cracked account by changing the name
-            + "UNIQUE (`Name`) "
-            + ')';
+            // the premium shouldn't steal the cracked account by changing the name
+            + "UNIQUE (`Name`) " + ')';
 
     protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `Name`=? LIMIT 1";
     protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE + "` WHERE `UUID`=? LIMIT 1";
@@ -88,9 +84,8 @@ public abstract class SQLStorage implements AuthStorage {
         // if UUID is always Premium UUID we would have to update offline player entries on insert
         // name cannot be PK, because it can be changed for premium players
 
-        //todo: add unique uuid index usage
-        try (Connection con = dataSource.getConnection();
-             Statement createStmt = con.createStatement()) {
+        // todo: add unique uuid index usage
+        try (Connection con = dataSource.getConnection(); Statement createStmt = con.createStatement()) {
             createStmt.executeUpdate(CREATE_TABLE_STMT);
         }
     }
@@ -98,8 +93,7 @@ public abstract class SQLStorage implements AuthStorage {
     @Override
     public StoredProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
-        ) {
+                PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)) {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
@@ -115,7 +109,7 @@ public abstract class SQLStorage implements AuthStorage {
     @Override
     public StoredProfile loadProfile(UUID uuid) {
         try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
+                PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
             loadStmt.setString(1, UUIDAdapter.toMojangId(uuid));
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {

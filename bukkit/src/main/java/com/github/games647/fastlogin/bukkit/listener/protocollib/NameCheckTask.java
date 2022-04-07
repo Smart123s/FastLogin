@@ -40,8 +40,7 @@ import java.util.Random;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource>
-        implements Runnable {
+public class NameCheckTask extends JoinManagement<Player, CommandSender, ProtocolLibLoginSource> implements Runnable {
 
     private final FastLoginBukkit plugin;
     private final PacketEvent packetEvent;
@@ -52,8 +51,8 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
     private final Player player;
     private final String username;
 
-    public NameCheckTask(FastLoginBukkit plugin, Random random, Player player, PacketEvent packetEvent,
-                         String username, PublicKey publicKey) {
+    public NameCheckTask(FastLoginBukkit plugin, Random random, Player player, PacketEvent packetEvent, String username,
+            PublicKey publicKey) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
 
         this.plugin = plugin;
@@ -75,17 +74,17 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
     @Override
     public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLibLoginSource source,
-                                                             StoredProfile profile) {
+            StoredProfile profile) {
         BukkitFastLoginPreLoginEvent event = new BukkitFastLoginPreLoginEvent(username, source, profile);
         plugin.getServer().getPluginManager().callEvent(event);
         return event;
     }
 
-    //Minecraft server implementation
-    //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
+    // Minecraft server implementation
+    // https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L161
     @Override
-    public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile
-            , String username, boolean registered) {
+    public void requestPremiumLogin(ProtocolLibLoginSource source, StoredProfile profile, String username,
+            boolean registered) {
         try {
             source.enableOnlinemode();
         } catch (Exception ex) {
@@ -100,7 +99,7 @@ public class NameCheckTask extends JoinManagement<Player, CommandSender, Protoco
 
         BukkitLoginSession playerSession = new BukkitLoginSession(username, verify, registered, profile);
         plugin.putSession(player.getAddress(), playerSession);
-        //cancel only if the player has a paid account otherwise login as normal offline player
+        // cancel only if the player has a paid account otherwise login as normal offline player
         synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
             packetEvent.setCancelled(true);
         }

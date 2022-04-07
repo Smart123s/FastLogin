@@ -46,24 +46,23 @@ public class BukkitLoginSession extends LoginSession {
 
     private SkinProperty skinProperty;
 
-    public BukkitLoginSession(String username, byte[] verifyToken, boolean registered
-            , StoredProfile profile) {
+    public BukkitLoginSession(String username, byte[] verifyToken, boolean registered, StoredProfile profile) {
         super(username, registered, profile);
 
         this.verifyToken = verifyToken.clone();
     }
 
-    //available for BungeeCord
+    // available for BungeeCord
     public BukkitLoginSession(String username, boolean registered) {
         this(username, EMPTY_ARRAY, registered, null);
     }
 
-    //cracked player
+    // cracked player
     public BukkitLoginSession(String username, StoredProfile profile) {
         this(username, EMPTY_ARRAY, false, profile);
     }
 
-    //ProtocolSupport
+    // ProtocolSupport
     public BukkitLoginSession(String username, boolean registered, StoredProfile profile) {
         this(username, EMPTY_ARRAY, registered, profile);
     }
@@ -88,6 +87,7 @@ public class BukkitLoginSession extends LoginSession {
 
     /**
      * Sets the premium skin property which was retrieved by the session server
+     *
      * @param skinProperty premium skin
      */
     public synchronized void setSkinProperty(SkinProperty skinProperty) {

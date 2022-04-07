@@ -55,9 +55,9 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             return;
         }
 
-        //check if the player is connecting through Bedrock Edition
+        // check if the player is connecting through Bedrock Edition
         if (bedrockService != null && bedrockService.isBedrockConnection(username)) {
-            //perform Bedrock specific checks and skip Java checks, if they are not needed
+            // perform Bedrock specific checks and skip Java checks, if they are not needed
             if (bedrockService.performChecks(username, source)) {
                 return;
             }
@@ -83,7 +83,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 if (core.getPendingLogin().remove(ip + username) != null && config.get("secondAttemptCracked", false)) {
                     core.getPlugin().getLog().info("Second attempt login -> cracked {}", username);
 
-                    //first login request failed so make a cracked session
+                    // first login request failed so make a cracked session
                     startCrackedSession(source, profile, username);
                     return;
                 }
@@ -93,10 +93,9 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                     premiumUUID = core.getResolver().findProfile(username);
                 }
 
-                if (!premiumUUID.isPresent()
-                        || (!checkNameChange(source, username, premiumUUID.get())
+                if (!premiumUUID.isPresent() || (!checkNameChange(source, username, premiumUUID.get())
                         && !checkPremiumName(source, username, profile))) {
-                    //nothing detected the player as premium -> start a cracked session
+                    // nothing detected the player as premium -> start a cracked session
                     if (core.getConfig().get("switchMode", false)) {
                         source.kick(core.getMessage("switch-kick-message"));
                         return;
@@ -106,9 +105,10 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
                 }
             }
         } catch (RateLimitException rateLimitEx) {
-            core.getPlugin().getLog().error("Mojang's rate limit reached for {}. The public IPv4 address of this" +
-                    " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10" +
-                    " minutes we can make requests again.", username);
+            core.getPlugin().getLog()
+                    .error("Mojang's rate limit reached for {}. The public IPv4 address of this"
+                            + " server issued more than 600 Name -> UUID requests within 10 minutes. After those 10"
+                            + " minutes we can make requests again.", username);
         } catch (Exception ex) {
             core.getPlugin().getLog().error("Failed to check premium state for {}", username, ex);
             core.getPlugin().getLog().error("Failed to check premium state of {}", username, ex);
@@ -136,14 +136,14 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     }
 
     private boolean checkNameChange(S source, String username, Profile profile) {
-        //user not exists in the db
+        // user not exists in the db
         if (core.getConfig().get("nameChangeCheck", false)) {
             StoredProfile storedProfile = core.getStorage().loadProfile(profile.getId());
             if (storedProfile != null) {
-                //uuid exists in the database
+                // uuid exists in the database
                 core.getPlugin().getLog().info("GameProfile {} changed it's username", profile);
 
-                //update the username to the new one in the database
+                // update the username to the new one in the database
                 storedProfile.setPlayerName(username);
 
                 requestPremiumLogin(source, storedProfile, username, false);

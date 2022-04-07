@@ -103,11 +103,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             config = loadFile("config.yml");
             Configuration messages = loadFile("messages.yml");
 
-            messages.getKeys()
-                    .stream()
-                    .filter(key -> messages.get(key) != null)
-                    .collect(toMap(identity(), messages::get))
-                    .forEach((key, message) -> {
+            messages.getKeys().stream().filter(key -> messages.get(key) != null)
+                    .collect(toMap(identity(), messages::get)).forEach((key, message) -> {
                         String colored = CommonUtil.translateColorCodes((String) message);
                         if (!colored.isEmpty()) {
                             localeMessages.put(key, colored.replace("/newline", "\n"));
@@ -119,12 +116,9 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         }
 
         rateLimiter = createRateLimiter(config.getSection("anti-bot"));
-        Set<Proxy> proxies = config.getStringList("proxies")
-                .stream()
-                .map(HostAndPort::fromString)
+        Set<Proxy> proxies = config.getStringList("proxies").stream().map(HostAndPort::fromString)
                 .map(proxy -> new InetSocketAddress(proxy.getHost(), proxy.getPort()))
-                .map(sa -> new Proxy(Type.HTTP, sa))
-                .collect(toSet());
+                .map(sa -> new Proxy(Type.HTTP, sa)).collect(toSet());
 
         Collection<InetAddress> addresses = new HashSet<>();
         for (String localAddress : config.getStringList("ip-addresses")) {
@@ -171,7 +165,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             config = configProvider.load(reader, defaults);
         }
 
-        // explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default configuration
+        // explicitly add keys here, because Configuration.getKeys doesn't return the keys from the default
+        // configuration
         for (String key : defaults.getKeys()) {
             config.set(key, config.get(key));
         }
@@ -224,8 +219,10 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
             boolean useSSL = config.get("useSSL", false);
 
             if (useSSL) {
-                databaseConfig.addDataSourceProperty("allowPublicKeyRetrieval", config.getBoolean("allowPublicKeyRetrieval", false));
-                databaseConfig.addDataSourceProperty("serverRSAPublicKeyFile", config.getString("ServerRSAPublicKeyFile"));
+                databaseConfig.addDataSourceProperty("allowPublicKeyRetrieval",
+                        config.getBoolean("allowPublicKeyRetrieval", false));
+                databaseConfig.addDataSourceProperty("serverRSAPublicKeyFile",
+                        config.getString("ServerRSAPublicKeyFile"));
                 databaseConfig.addDataSourceProperty("sslMode", config.getString("sslMode", "Required"));
             }
 
@@ -250,8 +247,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         } catch (ClassNotFoundException notFoundEx) {
             Logger log = plugin.getLog();
             log.warn("This driver {} is not supported on this platform", className);
-            log.warn("Please choose either MySQL (Spigot, BungeeCord), SQLite (Spigot, Sponge) or " +
-                "MariaDB (Sponge, Velocity)", notFoundEx);
+            log.warn("Please choose either MySQL (Spigot, BungeeCord), SQLite (Spigot, Sponge) or "
+                    + "MariaDB (Sponge, Velocity)", notFoundEx);
         }
 
         return false;

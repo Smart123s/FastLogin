@@ -64,14 +64,13 @@ public class VelocityFastLoginAutoLoginEvent
         this.cancelled = cancelled;
     }
 
-
     @Override
     public GenericResult getResult() {
-        return cancelled ? GenericResult.denied(): GenericResult.allowed();
+        return cancelled ? GenericResult.denied() : GenericResult.allowed();
     }
 
     @Override
     public void setResult(GenericResult result) {
-         cancelled = Objects.requireNonNull(result) != GenericResult.allowed();
+        cancelled = Objects.requireNonNull(result) != GenericResult.allowed();
     }
 }

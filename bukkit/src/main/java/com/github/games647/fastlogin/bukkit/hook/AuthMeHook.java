@@ -88,7 +88,7 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
             return false;
         }
 
-        //skips registration and login
+        // skips registration and login
         authmeAPI.forceLogin(player);
         return true;
     }
@@ -99,9 +99,9 @@ public class AuthMeHook implements AuthPlugin<Player>, Listener {
     }
 
     @Override
-    //this automatically login the player too
+    // this automatically login the player too
     public boolean forceRegister(Player player, String password) {
-        //if we have the management - we can trigger register with IP limit checks
+        // if we have the management - we can trigger register with IP limit checks
         if (authmeManagement != null) {
             authmeManagement.performRegister(RegistrationMethod.PASSWORD_REGISTRATION,
                     ApiPasswordRegisterParams.of(player, password, true));

@@ -83,7 +83,7 @@ class ProtocolLibLoginSource implements LoginSource {
 
         newPacket.getByteArrays().write(verifyField, verifyToken);
 
-        //serverId is an empty string
+        // serverId is an empty string
         ProtocolLibrary.getProtocolManager().sendServerPacket(player, newPacket);
     }
 
@@ -95,11 +95,11 @@ class ProtocolLibLoginSource implements LoginSource {
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(message));
 
         try {
-            //send kick packet at login state
-            //the normal event.getPlayer.kickPlayer(String) method does only work at play state
+            // send kick packet at login state
+            // the normal event.getPlayer.kickPlayer(String) method does only work at play state
             protocolManager.sendServerPacket(player, kickPacket);
         } finally {
-            //tell the server that we want to close the connection
+            // tell the server that we want to close the connection
             player.kickPlayer("Disconnect");
         }
     }
@@ -119,11 +119,7 @@ class ProtocolLibLoginSource implements LoginSource {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "player=" + player +
-                ", random=" + random +
-                ", serverId='" + serverId + '\'' +
-                ", verifyToken=" + Arrays.toString(verifyToken) +
-                '}';
+        return this.getClass().getSimpleName() + '{' + "player=" + player + ", random=" + random + ", serverId='"
+                + serverId + '\'' + ", verifyToken=" + Arrays.toString(verifyToken) + '}';
     }
 }

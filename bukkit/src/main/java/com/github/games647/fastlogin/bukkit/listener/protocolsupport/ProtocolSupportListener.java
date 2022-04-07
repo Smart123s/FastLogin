@@ -72,7 +72,7 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
         String username = loginStartEvent.getConnection().getProfile().getName();
         InetSocketAddress address = loginStartEvent.getAddress();
 
-        //remove old data every time on a new login in order to keep the session only for one person
+        // remove old data every time on a new login in order to keep the session only for one person
         plugin.removeSession(address);
 
         ProtocolLoginSource source = new ProtocolLoginSource(loginStartEvent);
@@ -102,15 +102,16 @@ public class ProtocolSupportListener extends JoinManagement<Player, CommandSende
     }
 
     @Override
-    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLoginSource source, StoredProfile profile) {
+    public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, ProtocolLoginSource source,
+            StoredProfile profile) {
         BukkitFastLoginPreLoginEvent event = new BukkitFastLoginPreLoginEvent(username, source, profile);
         plugin.getServer().getPluginManager().callEvent(event);
         return event;
     }
 
     @Override
-    public void requestPremiumLogin(ProtocolLoginSource source, StoredProfile profile, String username
-            , boolean registered) {
+    public void requestPremiumLogin(ProtocolLoginSource source, StoredProfile profile, String username,
+            boolean registered) {
         source.enableOnlinemode();
 
         String ip = source.getAddress().getAddress().getHostAddress();

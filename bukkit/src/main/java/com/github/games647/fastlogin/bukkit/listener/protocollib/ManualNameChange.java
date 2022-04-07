@@ -39,11 +39,9 @@ import static com.comphenix.protocol.PacketType.Login.Client.START;
 import com.comphenix.protocol.ProtocolLibrary;
 
 /**
- * Manually inject Floodgate player name prefixes.
- * <br>
- * This is used as a workaround, because Floodgate fails to inject
- * the prefixes when it's used together with ProtocolLib and FastLogin.
- * <br>
+ * Manually inject Floodgate player name prefixes. <br>
+ * This is used as a workaround, because Floodgate fails to inject the prefixes when it's used together with ProtocolLib
+ * and FastLogin. <br>
  * For more information visit: https://github.com/games647/FastLogin/issues/493
  */
 public class ManualNameChange extends PacketAdapter {
@@ -51,9 +49,7 @@ public class ManualNameChange extends PacketAdapter {
     private final FloodgateService floodgate;
 
     public ManualNameChange(FastLoginBukkit plugin, FloodgateService floodgate) {
-        super(params()
-                .plugin(plugin)
-                .types(START));
+        super(params().plugin(plugin).types(START));
 
         this.plugin = plugin;
         this.floodgate = floodgate;
@@ -61,10 +57,8 @@ public class ManualNameChange extends PacketAdapter {
 
     public static void register(FastLoginBukkit plugin, FloodgateService floodgate) {
         // they will be created with a static builder, because otherwise it will throw a NoClassDefFoundError
-        ProtocolLibrary.getProtocolManager()
-                .getAsynchronousManager()
-                .registerAsyncHandler(new ManualNameChange(plugin, floodgate))
-                .start();
+        ProtocolLibrary.getProtocolManager().getAsynchronousManager()
+                .registerAsyncHandler(new ManualNameChange(plugin, floodgate)).start();
     }
 
     @Override
@@ -73,7 +67,7 @@ public class ManualNameChange extends PacketAdapter {
         WrappedGameProfile originalProfile = packet.getGameProfiles().read(0);
 
         if (floodgate.getBedrockPlayer(originalProfile.getName()) == null) {
-            //not a Floodgate player, no need to add a prefix
+            // not a Floodgate player, no need to add a prefix
             return;
         }
 

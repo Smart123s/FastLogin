@@ -60,8 +60,7 @@ public class LoginSecurityHook implements AuthPlugin<Player> {
             return true;
         }
 
-        return session.isAuthorized()
-                || session.performAction(new LoginAction(AuthService.PLUGIN, plugin)).isSuccess();
+        return session.isAuthorized() || session.performAction(new LoginAction(AuthService.PLUGIN, plugin)).isSuccess();
     }
 
     @Override

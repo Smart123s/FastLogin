@@ -41,8 +41,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Encryption and decryption minecraft util for connection between servers
- * and paid Minecraft account clients.
+ * Encryption and decryption minecraft util for connection between servers and paid Minecraft account clients.
  *
  * @see net.minecraft.server.MinecraftEncryption
  */
@@ -74,8 +73,8 @@ public class EncryptionUtil {
     }
 
     /**
-     * Generate a random token. This is used to verify that we are communicating with the same player
-     * in a login session.
+     * Generate a random token. This is used to verify that we are communicating with the same player in a login
+     * session.
      *
      * @param random random generator
      * @return an error with 4 bytes long
@@ -141,8 +140,7 @@ public class EncryptionUtil {
         return cipher.doFinal(data);
     }
 
-    private static byte[] getServerIdHash(
-            String sessionId, PublicKey publicKey, SecretKey sharedSecret)
+    private static byte[] getServerIdHash(String sessionId, PublicKey publicKey, SecretKey sharedSecret)
             throws NoSuchAlgorithmException {
         // byte[] a(String var0, PublicKey var1, SecretKey var2)
         MessageDigest digest = MessageDigest.getInstance("SHA-1");

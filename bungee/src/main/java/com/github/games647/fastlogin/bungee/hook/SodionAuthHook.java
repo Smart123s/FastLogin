@@ -62,11 +62,11 @@ public class SodionAuthHook implements AuthPlugin<ProxiedPlayer> {
 
     @Override
     public boolean forceRegister(ProxiedPlayer player, String password) {
-        try{
+        try {
             return SodionAuthApi.register(new BungeePlayer(player), password);
-        } catch (UnsupportedOperationException e){
-            plugin.getLog().warn("Currently SodionAuth is not accepting forceRegister, " +
-                    "It may be caused by unsupported AuthBackend");
+        } catch (UnsupportedOperationException e) {
+            plugin.getLog().warn("Currently SodionAuth is not accepting forceRegister, "
+                    + "It may be caused by unsupported AuthBackend");
             return false;
         }
     }

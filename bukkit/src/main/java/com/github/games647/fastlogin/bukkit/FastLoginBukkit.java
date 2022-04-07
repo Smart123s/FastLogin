@@ -66,7 +66,7 @@ import org.slf4j.Logger;
  */
 public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<CommandSender> {
 
-    //1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
+    // 1 minutes should be enough as a timeout for bad internet connection (Server, Client and Mojang)
     private final ConcurrentMap<String, BukkitLoginSession> loginSession = CommonUtil.buildCache(1, -1);
     private final Map<UUID, PremiumStatus> premiumPlayers = new ConcurrentHashMap<>();
     private final Logger logger;
@@ -91,7 +91,7 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         core.load();
 
         if (getServer().getOnlineMode()) {
-            //we need to require offline to prevent a loginSession request for an offline player
+            // we need to require offline to prevent a loginSession request for an offline player
             logger.error("Server has to be in offline mode");
             setEnabled(false);
             return;
@@ -119,21 +119,24 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                 ProtocolLibListener.register(this, core.getRateLimiter());
 
                 if (isPluginInstalled("floodgate")) {
-                    if (getConfig().getBoolean("floodgatePrefixWorkaround")){
+                    if (getConfig().getBoolean("floodgatePrefixWorkaround")) {
                         ManualNameChange.register(this, floodgateService);
                         logger.info("Floodgate prefix injection workaround has been enabled.");
                         logger.info("If you have problems joining the server, try disabling it in the configuration.");
                     } else {
-                        logger.warn("We have detected that you are runnging FastLogin alongside Floodgate and ProtocolLib.");
-                        logger.warn("Currently there is an issue with FastLogin that prevents Floodgate name prefixes from showing up "
-                                + "when it is together used with ProtocolLib.");
-                        logger.warn("If you would like to use Floodgate name prefixes, you can enable an experimental workaround by changing "
-                                + "the value 'floodgatePrefixWorkaround' to true in config.yml.");
+                        logger.warn(
+                                "We have detected that you are runnging FastLogin alongside Floodgate and ProtocolLib.");
+                        logger.warn(
+                                "Currently there is an issue with FastLogin that prevents Floodgate name prefixes from showing up "
+                                        + "when it is together used with ProtocolLib.");
+                        logger.warn(
+                                "If you would like to use Floodgate name prefixes, you can enable an experimental workaround by changing "
+                                        + "the value 'floodgatePrefixWorkaround' to true in config.yml.");
                         logger.warn("For more information visit https://github.com/games647/FastLogin/issues/493");
                     }
                 }
 
-                //if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
+                // if server is using paper - we need to set the skin at pre login anyway, so no need for this listener
                 if (!PaperLib.isPaper() && getConfig().getBoolean("forwardSkin")) {
                     pluginManager.registerEvents(new SkinApplyListener(this), this);
                 }
@@ -144,17 +147,17 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
             }
         }
 
-        //delay dependency setup because we load the plugin very early where plugins are initialized yet
+        // delay dependency setup because we load the plugin very early where plugins are initialized yet
         getServer().getScheduler().runTaskLater(this, new DelayedAuthHook(this), 5L);
 
         pluginManager.registerEvents(new ConnectionListener(this), this);
 
-        //if server is using paper - we need to add one more listener to correct the user cache usage
+        // if server is using paper - we need to add one more listener to correct the user cache usage
         if (PaperLib.isPaper()) {
             pluginManager.registerEvents(new PaperCacheListener(this), this);
         }
 
-        //register commands using a unique name
+        // register commands using a unique name
         Optional.ofNullable(getCommand("premium")).ifPresent(c -> c.setExecutor(new PremiumCommand(this)));
         Optional.ofNullable(getCommand("cracked")).ifPresent(c -> c.setExecutor(new CrackedCommand(this)));
 
@@ -245,8 +248,8 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
      * Fetches the premium status of an online player.
      *
      * @param onlinePlayer player that is currently online player (play state)
-     * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send
-     * us the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
+     * @return the online status or unknown if an error happened, the player isn't online or BungeeCord doesn't send us
+     * the status message yet (This means you cannot check the login status on the PlayerJoinEvent).
      */
     public PremiumStatus getStatus(UUID onlinePlayer) {
         return premiumPlayers.getOrDefault(onlinePlayer, PremiumStatus.UNKNOWN);
@@ -290,16 +293,17 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
         receiver.sendMessage(message);
     }
 
-	/**
-	 * Checks if a plugin is installed on the server
-	 * @param name the name of the plugin
-	 * @return true if the plugin is installed
-	 */
-	@Override
-	public boolean isPluginInstalled(String name) {
-	    // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
-	    return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
-	}
+    /**
+     * Checks if a plugin is installed on the server
+     *
+     * @param name the name of the plugin
+     * @return true if the plugin is installed
+     */
+    @Override
+    public boolean isPluginInstalled(String name) {
+        // the plugin may be enabled after FastLogin, so isPluginEnabled() won't work here
+        return Bukkit.getServer().getPluginManager().getPlugin(name) != null;
+    }
 
     public FloodgateService getFloodgateService() {
         return floodgateService;
@@ -328,6 +332,6 @@ public class FastLoginBukkit extends JavaPlugin implements PlatformPlugin<Comman
                     + "Floodgate 2.0 from https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/dev%252F2.0/");
             logger.warn("Don't forget to update Geyser to a supported version as well from "
                     + "https://ci.opencollab.dev/job/GeyserMC/job/Geyser/job/floodgate-2.0/");
-    	}
+        }
     }
 }

@@ -53,11 +53,11 @@ public class VelocityLoginSource implements LoginSource {
     @Override
     public void kick(String message) {
         if (message == null) {
-            preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult.denied(
-                    Component.text("Kicked").color(NamedTextColor.WHITE)));
+            preLoginEvent.setResult(
+                    PreLoginEvent.PreLoginComponentResult.denied(Component.text("Kicked").color(NamedTextColor.WHITE)));
         } else {
-            preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult.denied(
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(message)));
+            preLoginEvent.setResult(PreLoginEvent.PreLoginComponentResult
+                    .denied(LegacyComponentSerializer.legacyAmpersand().deserialize(message)));
         }
     }
 

@@ -40,10 +40,8 @@ public class DefaultPasswordGenerator<P> implements PasswordGenerator<P> {
     @Override
     public String getRandomPassword(P player) {
         StringBuilder generatedPassword = new StringBuilder(8);
-        IntStream.rangeClosed(1, PASSWORD_LENGTH)
-                .map(i -> random.nextInt(PASSWORD_CHARACTERS.length - 1))
-                .mapToObj(pos -> PASSWORD_CHARACTERS[pos])
-                .forEach(generatedPassword::append);
+        IntStream.rangeClosed(1, PASSWORD_LENGTH).map(i -> random.nextInt(PASSWORD_CHARACTERS.length - 1))
+                .mapToObj(pos -> PASSWORD_CHARACTERS[pos]).forEach(generatedPassword::append);
 
         return generatedPassword.toString();
     }

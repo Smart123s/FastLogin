@@ -42,16 +42,14 @@ public class SQLiteStorage extends SQLStorage {
     private final Lock lock = new ReentrantLock();
 
     public SQLiteStorage(FastLoginCore<?, ?, ?> core, String databasePath, HikariConfig config) {
-        super(core,
-                "sqlite://" + replacePathVariables(core.getPlugin(), databasePath),
-                setParams(config));
+        super(core, "sqlite://" + replacePathVariables(core.getPlugin(), databasePath), setParams(config));
     }
 
     private static HikariConfig setParams(HikariConfig config) {
         config.setConnectionTestQuery("SELECT 1");
         config.setMaximumPoolSize(1);
 
-        //a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
+        // a try to fix https://www.spigotmc.org/threads/fastlogin.101192/page-26#post-1874647
         // format strings retrieved by the timestamp column to match them from MySQL
         config.addDataSourceProperty("date_string_format", "yyyy-MM-dd HH:mm:ss");
 
@@ -93,8 +91,7 @@ public class SQLiteStorage extends SQLStorage {
 
     @Override
     public void createTables() throws SQLException {
-        try (Connection con = dataSource.getConnection();
-             Statement createStmt = con.createStatement()) {
+        try (Connection con = dataSource.getConnection(); Statement createStmt = con.createStatement()) {
             // SQLite has a different syntax for auto increment
             createStmt.executeUpdate(CREATE_TABLE_STMT.replace("AUTO_INCREMENT", "AUTOINCREMENT"));
         }

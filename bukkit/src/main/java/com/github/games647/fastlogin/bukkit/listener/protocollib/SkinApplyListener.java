@@ -55,7 +55,7 @@ public class SkinApplyListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    //run this on the loginEvent to let skins plugins see the skin like in normal Minecraft behaviour
+    // run this on the loginEvent to let skins plugins see the skin like in normal Minecraft behaviour
     public void onPlayerLogin(PlayerLoginEvent loginEvent) {
         if (loginEvent.getResult() != Result.ALLOWED) {
             return;
@@ -63,8 +63,8 @@ public class SkinApplyListener implements Listener {
 
         Player player = loginEvent.getPlayer();
 
-        //go through every session, because player.getAddress is null
-        //loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
+        // go through every session, because player.getAddress is null
+        // loginEvent.getAddress is just a InetAddress not InetSocketAddress, so not unique enough
         for (BukkitLoginSession session : plugin.getLoginSessions().values()) {
             if (session.getUsername().equals(player.getName())) {
                 session.getSkin().ifPresent(skin -> applySkin(player, skin.getValue(), skin.getSignature()));
@@ -80,10 +80,10 @@ public class SkinApplyListener implements Listener {
         try {
             gameProfile.getProperties().put(Textures.KEY, skin);
         } catch (ClassCastException castException) {
-            //Cauldron, MCPC, Thermos, ...
+            // Cauldron, MCPC, Thermos, ...
             Object map = GET_PROPERTIES.invoke(gameProfile.getHandle());
             try {
-                MethodUtils.invokeMethod(map, "put", new Object[]{Textures.KEY, skin.getHandle()});
+                MethodUtils.invokeMethod(map, "put", new Object[] { Textures.KEY, skin.getHandle() });
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
                 plugin.getLog().error("Error setting premium skin of: {}", player, ex);
             }

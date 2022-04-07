@@ -48,7 +48,7 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
     private final PendingConnection connection;
 
     public AsyncPremiumCheck(FastLoginBungee plugin, PreLoginEvent preLoginEvent, PendingConnection connection,
-                             String username) {
+            String username) {
         super(plugin.getCore(), plugin.getCore().getAuthPluginHook(), plugin.getBedrockService());
 
         this.plugin = plugin;
@@ -70,14 +70,14 @@ public class AsyncPremiumCheck extends JoinManagement<ProxiedPlayer, CommandSend
 
     @Override
     public FastLoginPreLoginEvent callFastLoginPreLoginEvent(String username, BungeeLoginSource source,
-                                                             StoredProfile profile) {
+            StoredProfile profile) {
         return plugin.getProxy().getPluginManager()
                 .callEvent(new BungeeFastLoginPreLoginEvent(username, source, profile));
     }
 
     @Override
-    public void requestPremiumLogin(BungeeLoginSource source, StoredProfile profile,
-                                    String username, boolean registered) {
+    public void requestPremiumLogin(BungeeLoginSource source, StoredProfile profile, String username,
+            boolean registered) {
         source.enableOnlinemode();
         plugin.getSession().put(source.getConnection(), new BungeeLoginSession(username, registered, profile));
 

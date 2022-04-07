@@ -62,8 +62,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enables online mode logins for specified users and sends plugin message to the Bukkit version of this plugin in
- * order to clear that the connection is online mode.
+ * Enables online mode logins for specified users and sends plugin message to the Bukkit version of this plugin in order
+ * to clear that the connection is online mode.
  */
 public class ConnectListener implements Listener {
 
@@ -82,10 +82,8 @@ public class ConnectListener implements Listener {
             setHandle = lookup.unreflectSetter(uuidField);
         } catch (ReflectiveOperationException reflectiveOperationException) {
             Logger logger = LoggerFactory.getLogger(ConnectListener.class);
-            logger.error(
-                    "Cannot find Bungee initial handler; Disabling premium UUID and skin won't work.",
-                reflectiveOperationException
-            );
+            logger.error("Cannot find Bungee initial handler; Disabling premium UUID and skin won't work.",
+                    reflectiveOperationException);
         }
 
         uniqueIdSetter = setHandle;
@@ -126,8 +124,8 @@ public class ConnectListener implements Listener {
             return;
         }
 
-        //use the login event instead of the post login event in order to send the login success packet to the client
-        //with the offline uuid this makes it possible to set the skin then
+        // use the login event instead of the post login event in order to send the login success packet to the client
+        // with the offline uuid this makes it possible to set the skin then
         PendingConnection connection = loginEvent.getConnection();
         if (connection.isOnlineMode()) {
             LoginSession session = plugin.getSession().get(connection);

@@ -44,7 +44,7 @@ public class PaperCacheListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    //if paper is used - player skin must be set at pre login, otherwise user cache is used
+    // if paper is used - player skin must be set at pre login, otherwise user cache is used
     // user cache makes premium name change basically impossible
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != Result.ALLOWED) {
@@ -57,8 +57,8 @@ public class PaperCacheListener implements Listener {
                 continue;
             }
 
-            session.getSkin().ifPresent(skin -> event.getPlayerProfile().setProperty(new ProfileProperty(Textures.KEY,
-                    skin.getValue(), skin.getSignature())));
+            session.getSkin().ifPresent(skin -> event.getPlayerProfile()
+                    .setProperty(new ProfileProperty(Textures.KEY, skin.getValue(), skin.getSignature())));
             break;
         }
     }

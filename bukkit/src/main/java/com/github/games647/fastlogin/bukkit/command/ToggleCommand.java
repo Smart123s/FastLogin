@@ -70,7 +70,7 @@ public abstract class ToggleCommand implements CommandExecutor {
             return false;
         }
 
-        //console or command block
+        // console or command block
         sender.sendMessage(plugin.getCore().getMessage("no-console"));
         return true;
     }

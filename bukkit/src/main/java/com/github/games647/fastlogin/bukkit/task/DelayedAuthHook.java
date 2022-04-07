@@ -57,10 +57,11 @@ public class DelayedAuthHook implements Runnable {
         if (plugin.getBungeeManager().isEnabled()) {
             plugin.getLog().info("BungeeCord setting detected. No auth plugin is required");
         } else if (!hookFound) {
-            plugin.getLog().warn("No auth plugin were found by this plugin "
-                    + "(other plugins could hook into this after the initialization of this plugin)"
-                    + "and BungeeCord is deactivated. "
-                    + "Either one or both of the checks have to pass in order to use this plugin");
+            plugin.getLog()
+                    .warn("No auth plugin were found by this plugin "
+                            + "(other plugins could hook into this after the initialization of this plugin)"
+                            + "and BungeeCord is deactivated. "
+                            + "Either one or both of the checks have to pass in order to use this plugin");
         }
 
         if (hookFound) {
@@ -75,7 +76,7 @@ public class DelayedAuthHook implements Runnable {
     private boolean registerHooks() {
         AuthPlugin<Player> authPluginHook = getAuthHook();
         if (authPluginHook == null) {
-            //run this check for exceptions (errors) and not found plugins
+            // run this check for exceptions (errors) and not found plugins
             plugin.getLog().warn("No support offline Auth plugin found. ");
             return false;
         }
@@ -94,16 +95,16 @@ public class DelayedAuthHook implements Runnable {
 
     private AuthPlugin<Player> getAuthHook() {
         try {
-            List<Class<? extends AuthPlugin<Player>>> hooks = Arrays.asList(AuthMeHook.class,
-                    CrazyLoginHook.class, LogItHook.class, LoginSecurityHook.class,
-                    SodionAuthHook.class, UltraAuthHook.class, xAuthHook.class);
+            List<Class<? extends AuthPlugin<Player>>> hooks = Arrays.asList(AuthMeHook.class, CrazyLoginHook.class,
+                    LogItHook.class, LoginSecurityHook.class, SodionAuthHook.class, UltraAuthHook.class,
+                    xAuthHook.class);
 
             for (Class<? extends AuthPlugin<Player>> clazz : hooks) {
                 String pluginName = clazz.getSimpleName();
                 pluginName = pluginName.substring(0, pluginName.length() - "Hook".length());
-                //uses only member classes which uses AuthPlugin interface (skip interfaces)
+                // uses only member classes which uses AuthPlugin interface (skip interfaces)
                 if (Bukkit.getPluginManager().isPluginEnabled(pluginName)) {
-                    //check only for enabled plugins. A single plugin could be disabled by plugin managers
+                    // check only for enabled plugins. A single plugin could be disabled by plugin managers
                     return newInstance(clazz);
                 }
             }

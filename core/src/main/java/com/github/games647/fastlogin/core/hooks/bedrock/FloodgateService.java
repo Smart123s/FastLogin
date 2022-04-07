@@ -61,7 +61,8 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
      */
     public boolean isValidFloodgateConfigString(String key) {
         String value = core.getConfig().get(key).toString().toLowerCase(Locale.ENGLISH);
-        if (!value.equals("true") && !value.equals("linked") && !value.equals("false") && !value.equals("no-conflict")) {
+        if (!value.equals("true") && !value.equals("linked") && !value.equals("false")
+                && !value.equals("no-conflict")) {
             core.getPlugin().getLog().error("Invalid value detected for {} in FastLogin/config.yml.", key);
             return false;
         }
@@ -81,30 +82,27 @@ public class FloodgateService extends BedrockService<FloodgatePlayer> {
         FloodgatePlayer floodgatePlayer = getBedrockPlayer(username);
         boolean isLinked = floodgatePlayer.getLinkedPlayer() != null;
 
-        if ("false".equals(allowConflict)
-            || "linked".equals(allowConflict) && !isLinked) {
-                super.checkNameConflict(username, source);
+        if ("false".equals(allowConflict) || "linked".equals(allowConflict) && !isLinked) {
+            super.checkNameConflict(username, source);
         } else {
             core.getPlugin().getLog().info("Skipping name conflict checking for player {}", username);
         }
-        
-        //Floodgate users don't need Java specific checks
+
+        // Floodgate users don't need Java specific checks
         return true;
     }
 
     /**
-     * The FloodgateApi does not support querying players by name, so this function
-     * iterates over every online FloodgatePlayer and checks if the requested
-     * username can be found
-     * <br>
+     * The FloodgateApi does not support querying players by name, so this function iterates over every online
+     * FloodgatePlayer and checks if the requested username can be found <br>
      * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
-     * 
+     *
      * @param prefixedUsername the name of the player with the prefix appended
      * @return FloodgatePlayer if found, null otherwise
      */
     public FloodgatePlayer getBedrockPlayer(String prefixedUsername) {
-        //prefixes are broken with ProtocolLib, so fall back to name checks without prefixes
-        //this should be removed if #493 gets fixed
+        // prefixes are broken with ProtocolLib, so fall back to name checks without prefixes
+        // this should be removed if #493 gets fixed
         if (core.getPlugin().isPluginInstalled("ProtocolLib")) {
             for (FloodgatePlayer floodgatePlayer : floodgate.getPlayers()) {
                 if (floodgatePlayer.getUsername().equals(prefixedUsername)) {

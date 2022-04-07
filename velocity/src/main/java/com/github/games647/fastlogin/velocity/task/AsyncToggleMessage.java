@@ -43,8 +43,8 @@ public class AsyncToggleMessage implements Runnable {
     private final boolean toPremium;
     private final boolean isPlayerSender;
 
-    public AsyncToggleMessage(FastLoginCore<Player, CommandSource, FastLoginVelocity> core,
-             CommandSource sender, String playerName, boolean toPremium, boolean playerSender) {
+    public AsyncToggleMessage(FastLoginCore<Player, CommandSource, FastLoginVelocity> core, CommandSource sender,
+            String playerName, boolean toPremium, boolean playerSender) {
         this.core = core;
         this.sender = sender;
         this.targetPlayer = playerName;
@@ -67,7 +67,7 @@ public class AsyncToggleMessage implements Runnable {
 
     private void turnOffPremium() {
         StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
-        //existing player is already cracked
+        // existing player is already cracked
         if (playerProfile.isSaved() && !playerProfile.isPremium()) {
             sendMessage("not-premium");
             return;
@@ -76,10 +76,11 @@ public class AsyncToggleMessage implements Runnable {
         playerProfile.setPremium(false);
         playerProfile.setId(null);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
-        core.getPlugin().getProxy().getEventManager().fire(
-                new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
+        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
+                ? PremiumToggleReason.COMMAND_OTHER
+                : PremiumToggleReason.COMMAND_SELF;
+        core.getPlugin().getProxy().getEventManager()
+                .fire(new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("remove-premium");
     }
 
@@ -92,10 +93,11 @@ public class AsyncToggleMessage implements Runnable {
 
         playerProfile.setPremium(true);
         core.getStorage().save(playerProfile);
-        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName())) ?
-                PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
-        core.getPlugin().getProxy().getEventManager().fire(
-                new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
+        PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
+                ? PremiumToggleReason.COMMAND_OTHER
+                : PremiumToggleReason.COMMAND_SELF;
+        core.getPlugin().getProxy().getEventManager()
+                .fire(new VelocityFastLoginPremiumToggleEvent(playerProfile, reason));
         sendMessage("add-premium");
     }
 
@@ -104,7 +106,8 @@ public class AsyncToggleMessage implements Runnable {
         if (isPlayerSender) {
             sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
         } else {
-            core.getPlugin().getProxy().getConsoleCommandSource().sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
+            core.getPlugin().getProxy().getConsoleCommandSource()
+                    .sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(message));
         }
     }
 }

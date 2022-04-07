@@ -52,17 +52,16 @@ public abstract class BedrockService<B> {
      * Perform every packet level check needed on a Bedrock player.
      *
      * @param username the name of the player
-     * @param source   an instance of LoginSource
+     * @param source an instance of LoginSource
      * @return true if Java specific checks can be skipped
      */
     public abstract boolean performChecks(String username, LoginSource source);
 
     /**
-     * Check if the player's name conflicts an existing Java player's name, and kick
-     * them if it does
+     * Check if the player's name conflicts an existing Java player's name, and kick them if it does
      *
      * @param username the name of the player
-     * @param source   an instance of LoginSource
+     * @param source an instance of LoginSource
      */
     protected void checkNameConflict(String username, LoginSource source) {
         // check for conflicting Premium Java name
@@ -71,15 +70,15 @@ public abstract class BedrockService<B> {
             premiumUUID = core.getResolver().findProfile(username);
         } catch (IOException ioEx) {
             core.getPlugin().getLog().error(
-                "Could not check whether Bedrock Player {}'s name conflicts a premium Java player's name.",
-                username);
+                    "Could not check whether Bedrock Player {}'s name conflicts a premium Java player's name.",
+                    username);
 
-            kickPlayer(source, username, "Could not check if your name conflicts an existing " +
-                "premium Java account's name. This is usually a serverside error.");
+            kickPlayer(source, username, "Could not check if your name conflicts an existing "
+                    + "premium Java account's name. This is usually a serverside error.");
         } catch (RateLimitException rateLimitException) {
             core.getPlugin().getLog().warn("Mojang API rate limit hit");
-            kickPlayer(source, username, "Could not check if your name conflicts an existing premium " +
-                "Java account's name. Try again in a few minutes");
+            kickPlayer(source, username, "Could not check if your name conflicts an existing premium "
+                    + "Java account's name. Try again in a few minutes");
         }
 
         if (premiumUUID.isPresent()) {
@@ -98,10 +97,8 @@ public abstract class BedrockService<B> {
     }
 
     /**
-     * The Floodgate / Geyser API does not support querying players by name, so this function
-     * iterates over every online Bedrock Player and checks if the requested
-     * username can be found
-     * <br>
+     * The Floodgate / Geyser API does not support querying players by name, so this function iterates over every online
+     * Bedrock Player and checks if the requested username can be found <br>
      * <i>Falls back to non-prefixed name checks, if ProtocolLib is installed</i>
      *
      * @param prefixedUsername the name of the player with the prefix appended
@@ -125,6 +122,7 @@ public abstract class BedrockService<B> {
 
     /**
      * Checks if a profile's name starts with the Floodgate prefix, if it's available
+     *
      * @param profile profile of the connecting player
      * @return true if the username is forbidden
      */

@@ -68,16 +68,16 @@ public class PluginMessageListener implements Listener {
             return;
         }
 
-        //the client shouldn't be able to read the messages in order to know something about server internal states
-        //moreover the client shouldn't be able to fake a running premium check by sending the result message
+        // the client shouldn't be able to read the messages in order to know something about server internal states
+        // moreover the client shouldn't be able to fake a running premium check by sending the result message
         pluginMessageEvent.setCancelled(true);
 
         if (!(pluginMessageEvent.getSender() instanceof Server)) {
-            //check if the message is sent from the server
+            // check if the message is sent from the server
             return;
         }
 
-        //so that we can safely process this in the background
+        // so that we can safely process this in the background
         byte[] data = Arrays.copyOf(pluginMessageEvent.getData(), pluginMessageEvent.getData().length);
         ProxiedPlayer forPlayer = (ProxiedPlayer) pluginMessageEvent.getReceiver();
 
@@ -125,8 +125,8 @@ public class PluginMessageListener implements Listener {
         }
 
         if (shouldPersist) {
-            //bukkit module successfully received and force logged in the user
-            //update only on success to prevent corrupt data
+            // bukkit module successfully received and force logged in the user
+            // update only on success to prevent corrupt data
             BungeeLoginSession loginSession = plugin.getSession().get(forPlayer.getPendingConnection());
             StoredProfile playerProfile = loginSession.getProfile();
             loginSession.setRegistered(true);

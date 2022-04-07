@@ -37,8 +37,7 @@ import java.util.logging.Level;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
- * GitHub:
- * https://github.com/xXSchrandXx/SpigotPlugins/tree/master/BungeeCordAuthenticator
+ * GitHub: https://github.com/xXSchrandXx/SpigotPlugins/tree/master/BungeeCordAuthenticator
  * <p>
  * Project page:
  * <p>
@@ -50,7 +49,7 @@ public class BungeeCordAuthenticatorBungeeHook implements AuthPlugin<ProxiedPlay
 
     public BungeeCordAuthenticatorBungeeHook(FastLoginBungee plugin) {
         api = ((BungeeCordAuthenticatorBungee) plugin.getProxy().getPluginManager()
-            .getPlugin("BungeeCordAuthenticatorBungee")).getAPI();
+                .getPlugin("BungeeCordAuthenticatorBungee")).getAPI();
         plugin.getLog().info("BungeeCordAuthenticatorHook | Hooked successful!");
     }
 

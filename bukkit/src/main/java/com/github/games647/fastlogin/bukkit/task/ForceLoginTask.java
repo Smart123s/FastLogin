@@ -46,7 +46,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, BukkitLoginSession, FastLoginBukkit> {
 
     public ForceLoginTask(FastLoginCore<Player, CommandSender, FastLoginBukkit> core, Player player,
-                          BukkitLoginSession session) {
+            BukkitLoginSession session) {
         super(core, player, session);
     }
 
@@ -94,7 +94,7 @@ public class ForceLoginTask extends ForceLoginManagement<Player, CommandSender, 
     @Override
     public boolean isOnline(Player player) {
         try {
-            //the player-list isn't thread-safe
+            // the player-list isn't thread-safe
             return Bukkit.getScheduler().callSyncMethod(core.getPlugin(), player::isOnline).get();
         } catch (InterruptedException | ExecutionException ex) {
             core.getPlugin().getLog().error("Failed to perform thread-safe online check for {}", player, ex);

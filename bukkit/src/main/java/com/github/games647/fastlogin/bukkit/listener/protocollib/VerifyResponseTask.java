@@ -67,7 +67,8 @@ public class VerifyResponseTask implements Runnable {
     private static final Class<?> ENCRYPTION_CLASS;
 
     static {
-        ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass("util." + ENCRYPTION_CLASS_NAME, ENCRYPTION_CLASS_NAME);
+        ENCRYPTION_CLASS = MinecraftReflection.getMinecraftClass("util." + ENCRYPTION_CLASS_NAME,
+                ENCRYPTION_CLASS_NAME);
     }
 
     private final FastLoginBukkit plugin;
@@ -81,8 +82,8 @@ public class VerifyResponseTask implements Runnable {
     private static Method encryptMethod;
     private static Method cipherMethod;
 
-    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player,
-                              byte[] sharedSecret, KeyPair keyPair) {
+    public VerifyResponseTask(FastLoginBukkit plugin, PacketEvent packetEvent, Player player, byte[] sharedSecret,
+            KeyPair keyPair) {
         this.plugin = plugin;
         this.packetEvent = packetEvent;
         this.player = player;
@@ -95,13 +96,13 @@ public class VerifyResponseTask implements Runnable {
         try {
             BukkitLoginSession session = plugin.getSession(player.getAddress());
             if (session == null) {
-                disconnect("invalid-request", true
-                        , "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());
+                disconnect("invalid-request", true,
+                        "GameProfile {0} tried to send encryption response at invalid state", player.getAddress());
             } else {
                 verifyResponse(session);
             }
         } finally {
-            //this is a fake packet; it shouldn't be sent to the server
+            // this is a fake packet; it shouldn't be sent to the server
             synchronized (packetEvent.getAsyncMarker().getProcessingLock()) {
                 packetEvent.setCancelled(true);
             }
@@ -159,10 +160,10 @@ public class VerifyResponseTask implements Runnable {
                 setPremiumUUID(session.getUuid());
                 receiveFakeStartPacket(realUsername);
             } else {
-                //user tried to fake an authentication
-                disconnect("invalid-session", true
-                        , "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}"
-                        , session.getRequestUsername(), socketAddress, serverId);
+                // user tried to fake an authentication
+                disconnect("invalid-session", true,
+                        "GameProfile {0} ({1}) tried to log in with an invalid session ServerId: {2}",
+                        session.getRequestUsername(), socketAddress, serverId);
             }
         } catch (IOException ioEx) {
             disconnect("error-kick", false, "Failed to connect to session server", ioEx);
@@ -173,7 +174,7 @@ public class VerifyResponseTask implements Runnable {
         if (plugin.getConfig().getBoolean("premiumUuid") && premiumUUID != null) {
             try {
                 Object networkManager = getNetworkManager();
-                //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
+                // https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/NetworkManager.java#L69
                 FieldUtils.writeField(networkManager, "spoofedUUID", premiumUUID, true);
             } catch (Exception exc) {
                 plugin.getLog().error("Error setting premium uuid of {}", player, exc);
@@ -183,22 +184,22 @@ public class VerifyResponseTask implements Runnable {
 
     private boolean checkVerifyToken(BukkitLoginSession session) throws GeneralSecurityException {
         byte[] requestVerify = session.getVerifyToken();
-        //encrypted verify token
+        // encrypted verify token
         byte[] responseVerify = packetEvent.getPacket().getByteArrays().read(1);
 
-        //https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
+        // https://github.com/bergerkiller/CraftSource/blob/master/net.minecraft.server/LoginListener.java#L182
         if (!Arrays.equals(requestVerify, EncryptionUtil.decrypt(serverKey.getPrivate(), responseVerify))) {
-            //check if the verify-token are equal to the server sent one
-            disconnect("invalid-verify-token", true
-                    , "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}"
-                    , session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
+            // check if the verify-token are equal to the server sent one
+            disconnect("invalid-verify-token", true,
+                    "GameProfile {0} ({1}) tried to login with an invalid verify token. Server: {2} Client: {3}",
+                    session.getRequestUsername(), packetEvent.getPlayer().getAddress(), requestVerify, responseVerify);
             return false;
         }
 
         return true;
     }
 
-    //try to get the networkManager from ProtocolLib
+    // try to get the networkManager from ProtocolLib
     private Object getNetworkManager() throws IllegalAccessException, ClassNotFoundException {
         Object injectorContainer = TemporaryPlayerFactory.getInjectorFromPlayer(player);
 
@@ -216,16 +217,16 @@ public class VerifyResponseTask implements Runnable {
 
             try {
                 // Try to get the old (pre MC 1.16.4) encryption method
-                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                        .getMethodByParameters("a", SecretKey.class);
+                encryptMethod = FuzzyReflection.fromClass(networkManagerClass).getMethodByParameters("a",
+                        SecretKey.class);
             } catch (IllegalArgumentException exception) {
                 // Get the new encryption method
-                encryptMethod = FuzzyReflection.fromClass(networkManagerClass)
-                        .getMethodByParameters("a", Cipher.class, Cipher.class);
+                encryptMethod = FuzzyReflection.fromClass(networkManagerClass).getMethodByParameters("a", Cipher.class,
+                        Cipher.class);
 
                 // Get the needed Cipher helper method (used to generate ciphers from login key)
-                cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS)
-                        .getMethodByParameters("a", int.class, Key.class);
+                cipherMethod = FuzzyReflection.fromClass(ENCRYPTION_CLASS).getMethodByParameters("a", int.class,
+                        Key.class);
             }
         }
 
@@ -266,31 +267,31 @@ public class VerifyResponseTask implements Runnable {
         PacketContainer kickPacket = new PacketContainer(DISCONNECT);
         kickPacket.getChatComponents().write(0, WrappedChatComponent.fromText(reason));
         try {
-            //send kick packet at login state
-            //the normal event.getPlayer.kickPlayer(String) method does only work at play state
+            // send kick packet at login state
+            // the normal event.getPlayer.kickPlayer(String) method does only work at play state
             ProtocolLibrary.getProtocolManager().sendServerPacket(player, kickPacket);
-            //tell the server that we want to close the connection
+            // tell the server that we want to close the connection
             player.kickPlayer("Disconnect");
         } catch (InvocationTargetException ex) {
             plugin.getLog().error("Error sending kick packet for: {}", player, ex);
         }
     }
 
-    //fake a new login packet in order to let the server handle all the other stuff
+    // fake a new login packet in order to let the server handle all the other stuff
     private void receiveFakeStartPacket(String username) {
-        //see StartPacketListener for packet information
+        // see StartPacketListener for packet information
         PacketContainer startPacket = new PacketContainer(START);
 
-        //uuid is ignored by the packet definition
+        // uuid is ignored by the packet definition
         WrappedGameProfile fakeProfile = new WrappedGameProfile(UUID.randomUUID(), username);
         startPacket.getGameProfiles().write(0, fakeProfile);
         try {
-            //we don't want to handle our own packets so ignore filters
+            // we don't want to handle our own packets so ignore filters
             startPacket.setMeta(ProtocolLibListener.SOURCE_META_KEY, plugin.getName());
             ProtocolLibrary.getProtocolManager().recieveClientPacket(player, startPacket, true);
         } catch (InvocationTargetException | IllegalAccessException ex) {
             plugin.getLog().warn("Failed to fake a new start packet for: {}", username, ex);
-            //cancel the event in order to prevent the server receiving an invalid packet
+            // cancel the event in order to prevent the server receiving an invalid packet
             kickPlayer(plugin.getCore().getMessage("error-kick"));
         }
     }

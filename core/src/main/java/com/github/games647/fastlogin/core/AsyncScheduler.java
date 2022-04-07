@@ -32,17 +32,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 
 /**
- * This limits the number of threads that are used at maximum. Thread creation can be very heavy for the CPU and
- * context switching between threads too. However, we need many threads for blocking HTTP and database calls.
- * Nevertheless, this number can be further limited, because the number of actually working database threads
- * is limited by the size of our database pool. The goal is to separate concerns into processing and blocking only
- * threads.
+ * This limits the number of threads that are used at maximum. Thread creation can be very heavy for the CPU and context
+ * switching between threads too. However, we need many threads for blocking HTTP and database calls. Nevertheless, this
+ * number can be further limited, because the number of actually working database threads is limited by the size of our
+ * database pool. The goal is to separate concerns into processing and blocking only threads.
  */
 public class AsyncScheduler {
 
     private static final int MAX_CAPACITY = 1024;
 
-    //todo: single thread for delaying and scheduling tasks
+    // todo: single thread for delaying and scheduling tasks
     private final Logger logger;
 
     // 30 threads are still too many - the optimal solution is to separate into processing and blocking threads
@@ -53,9 +52,8 @@ public class AsyncScheduler {
     private final AtomicInteger currentlyRunning = new AtomicInteger();
 
     /*
-    private final ExecutorService databaseExecutor = new ThreadPoolExecutor(1, 10,
-            0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(MAX_CAPACITY));
+     * private final ExecutorService databaseExecutor = new ThreadPoolExecutor(1, 10, 0L, TimeUnit.MILLISECONDS, new
+     * LinkedBlockingQueue<>(MAX_CAPACITY));
      */
 
     public AsyncScheduler(Logger logger, Executor processingPool) {
@@ -66,11 +64,11 @@ public class AsyncScheduler {
     public CompletableFuture<Void> runAsync(Runnable task) {
         return CompletableFuture.runAsync(() -> {
             currentlyRunning.incrementAndGet();
-             try {
-                 task.run();
-             } finally {
-                 currentlyRunning.getAndDecrement();
-             }
+            try {
+                task.run();
+            } finally {
+                currentlyRunning.getAndDecrement();
+            }
         }, processingPool).exceptionally(error -> {
             logger.warn("Error occurred on thread pool", error);
             return null;
@@ -79,6 +77,6 @@ public class AsyncScheduler {
 
     public void shutdown() {
         // MoreExecutors.shutdownAndAwaitTermination(processingPool, 1, TimeUnit.MINUTES);
-        //MoreExecutors.shutdownAndAwaitTermination(databaseExecutor, 1, TimeUnit.MINUTES);
+        // MoreExecutors.shutdownAndAwaitTermination(databaseExecutor, 1, TimeUnit.MINUTES);
     }
 }

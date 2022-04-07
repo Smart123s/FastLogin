@@ -100,7 +100,7 @@ public class BungeeListener implements PluginMessageListener {
         } else if (type == Type.REGISTER) {
             onRegisterMessage(player, playerName, address);
         } else if (type == Type.CRACKED) {
-            //we don't start a force login task here so update it manually
+            // we don't start a force login task here so update it manually
             plugin.getPremiumPlayers().put(player.getUniqueId(), PremiumStatus.CRACKED);
         }
     }
@@ -114,7 +114,7 @@ public class BungeeListener implements PluginMessageListener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             AuthPlugin<Player> authPlugin = plugin.getCore().getAuthPluginHook();
             try {
-                //we need to check if the player is registered on Bukkit too
+                // we need to check if the player is registered on Bukkit too
                 if (authPlugin == null || !authPlugin.isRegistered(playerName)) {
                     BukkitLoginSession playerSession = new BukkitLoginSession(playerName, false);
                     startLoginTaskIfReady(player, playerSession);

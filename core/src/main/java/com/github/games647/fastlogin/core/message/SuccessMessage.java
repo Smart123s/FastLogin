@@ -39,12 +39,12 @@ public class SuccessMessage implements ChannelMessage {
 
     @Override
     public void readFrom(ByteArrayDataInput input) {
-        //empty
+        // empty
     }
 
     @Override
     public void writeTo(ByteArrayDataOutput output) {
-        //empty
+        // empty
     }
 
     @Override

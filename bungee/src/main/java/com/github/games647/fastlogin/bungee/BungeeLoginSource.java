@@ -72,8 +72,6 @@ public class BungeeLoginSource implements LoginSource {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '{' +
-                "connection=" + connection +
-                '}';
+        return this.getClass().getSimpleName() + '{' + "connection=" + connection + '}';
     }
 }

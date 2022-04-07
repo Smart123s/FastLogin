@@ -41,7 +41,7 @@ public class NamespaceKey {
         this.combined = this.namespace + SEPARATOR_CHAR + this.key;
     }
 
-    public String getCombinedName()  {
+    public String getCombinedName() {
         return combined;
     }
 

@@ -93,12 +93,13 @@ public class ConnectListener {
             if (!plugin.getCore().getConfig().get("premiumUuid", true)) {
                 UUID offlineUUID = UUIDAdapter.generateOfflineId(playerProfile.getName());
                 event.setGameProfile(event.getGameProfile().withId(offlineUUID));
-                plugin.getLog().info("Overridden UUID from {} to {} (based of {}) on {}",
-                        verifiedUUID, offlineUUID, verifiedUsername, event.getConnection());
+                plugin.getLog().info("Overridden UUID from {} to {} (based of {}) on {}", verifiedUUID, offlineUUID,
+                        verifiedUsername, event.getConnection());
             }
 
             if (!plugin.getCore().getConfig().get("forwardSkin", true)) {
-                event.setGameProfile(event.getGameProfile().withProperties(removeSkin(event.getGameProfile().getProperties())));
+                event.setGameProfile(
+                        event.getGameProfile().withProperties(removeSkin(event.getGameProfile().getProperties())));
             }
         }
     }
@@ -127,8 +128,7 @@ public class ConnectListener {
         // In this case it means that the force command (plugin message) is already received and processed while
         // player is still in the login phase and reported to be offline.
         Runnable loginTask = new ForceLoginTask(plugin.getCore(), player, server, session);
-        plugin.getProxy().getScheduler()
-                .buildTask(plugin, () -> plugin.getScheduler().runAsync(loginTask))
+        plugin.getProxy().getScheduler().buildTask(plugin, () -> plugin.getScheduler().runAsync(loginTask))
                 .delay(1L, TimeUnit.SECONDS) // Delay at least one second, otherwise the login command can be missed
                 .schedule();
     }
