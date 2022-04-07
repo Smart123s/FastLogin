@@ -112,6 +112,7 @@
                             <excludes>
                                 <exclude>src/test/resources/**</exclude>
                                 <exclude>src/main/resources/**</exclude>
+                                <exclude>codeformat.xml</exclude>
                             </excludes>
                         </licenseSet>
                     </licenseSets>
@@ -131,6 +132,7 @@
                 <version>2.18.0</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <configFile>${maven.multiModuleProjectDirectory}/codeformat.xml</configFile>
                 </configuration>
                 <executions>
                     <execution>
