@@ -28,7 +28,6 @@ package com.github.games647.fastlogin.core;
 import com.github.games647.fastlogin.core.MockObjects.MockPlugin;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 
@@ -44,7 +43,7 @@ public class FastLoginCoreTest {
 
     @Before
     public void setUp() throws IOException {
-        this.plugin = Mockito.spy(new MockPlugin());
+        plugin = new MockPlugin();
     }
 
     @Test
