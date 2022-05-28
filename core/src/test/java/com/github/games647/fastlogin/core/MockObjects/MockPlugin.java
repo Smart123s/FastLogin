@@ -89,6 +89,16 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
         } catch (Exception ex) {
             log.warn("Failed to setup database. Disabling plugin...", ex);
         }
+
+        // add mock players to database
+        storage.save(new StoredProfile(null, "knownCracked1", false, "0.0.1.1"));
+        storage.save(new StoredProfile(null, "knownCracked2", false, "0.0.1.2"));
+        storage.save(new StoredProfile(UUID.fromString("6e5480fd-d50e-4f60-83fc-8be8d81ff2d3"), "knownPremium1", true, "0.0.1.1"));
+        storage.save(new StoredProfile(UUID.fromString("800308bf-8ef2-472c-8886-23b5be8e522a"), "knownPremium2", true, "0.0.1.1"));
+        storage.save(new StoredProfile(UUID.fromString("f1db843f-8d5a-4c72-82a6-4da597184816"), "changedName1", true, "0.0.2.1"));
+        // cracked player with an existing premium accounts name
+        storage.save(new StoredProfile(null, "crackPremiumName1", false, "0.0.3.1"));
+
     }
 
     @Override
