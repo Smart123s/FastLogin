@@ -34,6 +34,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,5 +77,21 @@ public class JoinManagementTest extends FastLoginCoreTest {
 
         jm.onLogin(username, source);
         verify(jm).startCrackedSession(eq(source), any(), eq(username));
+    }
+
+    @Test
+    public void joinCrackedWithPremiumName() throws UnknownHostException {
+        String username = "knownPremium1";
+        byte[] ip = {0, 0, 1, 1};
+        InetSocketAddress address = new InetSocketAddress(InetAddress.getByAddress(ip), 25567);
+        MockLoginSource source = new MockLoginSource(address);
+
+        plugin.getConfig().set("nameChangeCheck", true);
+        plugin.getConfig().set("autoRegister", true);
+
+        StoredProfile profile = plugin.getCore().getStorage().loadProfile(username);
+
+        jm.onLogin(username, source);
+        verify(jm).requestPremiumLogin(source, profile, username, true);
     }
 }

@@ -30,6 +30,16 @@ import com.github.games647.fastlogin.core.shared.LoginSource;
 import java.net.InetSocketAddress;
 
 public class MockLoginSource implements LoginSource {
+
+    private final InetSocketAddress address;
+
+    public MockLoginSource(InetSocketAddress address) {
+        this.address = address;
+    }
+
+    public MockLoginSource() {
+        this(new InetSocketAddress(25567));
+    }
     @Override
     public void enableOnlinemode() throws Exception {
 
@@ -42,6 +52,6 @@ public class MockLoginSource implements LoginSource {
 
     @Override
     public InetSocketAddress getAddress() {
-        return new InetSocketAddress(25567);
+        return this.address;
     }
 }
