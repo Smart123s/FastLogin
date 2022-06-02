@@ -50,6 +50,8 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.UUID;
 
+import static org.mockito.Mockito.lenient;
+
 public class MockPlugin implements PlatformPlugin<MockCommandSender> {
 
     //for testing shared code from core, where the platform (ex. Bukkit or Bungee) doesn't matter
@@ -60,19 +62,19 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
 
     public MockPlugin() throws IOException {
         core = Mockito.mock(FastLoginCore.class);
-        Mockito.when(core.getPlugin()).thenReturn(this);
-        Mockito.when(core.getPendingLogin()).thenReturn(CommonUtil.buildCache(5, -1));
+        lenient().when(core.getPlugin()).thenReturn(this);
+        lenient().when(core.getPendingLogin()).thenReturn(CommonUtil.buildCache(5, -1));
 
 
         // load default config
         File configfile = new File(Objects.requireNonNull(getClass().getResource("/config.yml")).getPath());
         YamlConfiguration provider = (YamlConfiguration) ConfigurationProvider.getProvider(YamlConfiguration.class);
         config = provider.load(configfile);
-        Mockito.when(core.getConfig()).thenReturn(config);
+        lenient().when(core.getConfig()).thenReturn(config);
 
         // rate limiter
         RateLimiter rateLimiter = new TickingRateLimiter(Ticker.systemTicker(), 600, 10);
-        Mockito.when(core.getRateLimiter()).thenReturn(rateLimiter);
+        lenient().when(core.getRateLimiter()).thenReturn(rateLimiter);
 
         // storage
         HikariConfig databaseConfig = new HikariConfig();
@@ -82,7 +84,7 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
 
         String databasePath = "{pluginDir}/FastLogin_" + UUID.randomUUID() + ".db";
         SQLiteStorage storage = new SQLiteStorage(core, databasePath, databaseConfig);
-        Mockito.when(core.getStorage()).thenReturn(storage);
+        lenient().when(core.getStorage()).thenReturn(storage);
 
         try {
             storage.createTables();

@@ -29,8 +29,8 @@ import com.github.games647.fastlogin.core.FastLoginCoreTest;
 import com.github.games647.fastlogin.core.MockObjects.MockLoginSource;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.event.FastLoginPreLoginEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class JoinManagementTest extends FastLoginCoreTest {
     private JoinManagement jm;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         super.setUp();
         JoinManagement jmInstance = new JoinManagement(plugin.getCore(), null, null) {

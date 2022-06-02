@@ -26,14 +26,17 @@
 package com.github.games647.fastlogin.core;
 
 import com.github.games647.fastlogin.core.MockObjects.MockPlugin;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoExtension.class)
 public class FastLoginCoreTest {
 
     // Based on
@@ -41,16 +44,17 @@ public class FastLoginCoreTest {
 
     public MockPlugin plugin;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         plugin = new MockPlugin();
     }
 
     @Test
     public void testDefaultConfigLoaded() {
-        assertNull("Key 'asd' is not present in config.yml", plugin.getConfig().get("asd"));
-        assertTrue("autoLogin should be true if the default config is loaded",
-                plugin.getConfig().getBoolean("autoLogin"));
+        assertNull(plugin.getConfig().get("asd"),
+                "Key 'asd' is not present in config.yml");
+        assertTrue(plugin.getConfig().getBoolean("autoLogin"),
+                "autoLogin should be true if the default config is loaded");
     }
 
 }

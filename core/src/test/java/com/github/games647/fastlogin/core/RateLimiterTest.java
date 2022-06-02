@@ -28,10 +28,10 @@ package com.github.games647.fastlogin.core;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RateLimiterTest {
 
@@ -49,12 +49,12 @@ public class RateLimiterTest {
         // run twice the size to fill it first and then test it
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertTrue(rateLimiter.tryAcquire(), "Filling up");
         }
 
         for (int i = 0; i < size; i++) {
             ticker.add(Duration.ofSeconds(1));
-            assertTrue("Should be expired", rateLimiter.tryAcquire());
+            assertTrue(rateLimiter.tryAcquire(), "Should be expired");
         }
     }
 
@@ -67,12 +67,12 @@ public class RateLimiterTest {
         // run twice the size to fill it first and then test it
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, 0);
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertTrue(rateLimiter.tryAcquire(), "Filling up");
         }
 
         for (int i = 0; i < size; i++) {
             ticker.add(Duration.ofSeconds(1));
-            assertTrue("Should be expired", rateLimiter.tryAcquire());
+            assertTrue(rateLimiter.tryAcquire(), "Should be expired");
         }
     }
 
@@ -88,10 +88,10 @@ public class RateLimiterTest {
         // fill the size
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertTrue(rateLimiter.tryAcquire(), "Filling up");
         }
 
-        assertFalse("Should be full and no entry should be expired", rateLimiter.tryAcquire());
+        assertFalse(rateLimiter.tryAcquire(), "Should be full and no entry should be expired");
     }
 
     /**
@@ -106,10 +106,10 @@ public class RateLimiterTest {
         // fill the size
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, size, TimeUnit.SECONDS.toMillis(30));
         for (int i = 0; i < size; i++) {
-            assertTrue("Filling up", rateLimiter.tryAcquire());
+            assertTrue(rateLimiter.tryAcquire(), "Filling up");
         }
 
-        assertFalse("Should be full and no entry should be expired", rateLimiter.tryAcquire());
+        assertFalse(rateLimiter.tryAcquire(), "Should be full and no entry should be expired");
     }
 
     /**
@@ -121,16 +121,16 @@ public class RateLimiterTest {
 
         // fill the size - 100ms should be reasonable high
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, 1, 100);
-        assertTrue("Filling up", rateLimiter.tryAcquire());
+        assertTrue(rateLimiter.tryAcquire(), "Filling up");
 
         ticker.add(Duration.ofMillis(50));
 
         // still is full - should fail
-        assertFalse("Expired too early", rateLimiter.tryAcquire());
+        assertFalse(rateLimiter.tryAcquire(), "Expired too early");
 
         // wait the remaining time and add a threshold, because
         ticker.add(Duration.ofMillis(50));
-        assertTrue("Request not released", rateLimiter.tryAcquire());
+        assertTrue(rateLimiter.tryAcquire(), "Request not released");
     }
 
     /**
@@ -142,15 +142,15 @@ public class RateLimiterTest {
 
         // fill the size - 100ms should be reasonable high
         TickingRateLimiter rateLimiter = new TickingRateLimiter(ticker, 1, 100);
-        assertTrue("Filling up", rateLimiter.tryAcquire());
+        assertTrue(rateLimiter.tryAcquire(), "Filling up");
 
         ticker.add(Duration.ofMillis(50));
 
         // still is full - should fail
-        assertFalse("Expired too early", rateLimiter.tryAcquire());
+        assertFalse(rateLimiter.tryAcquire(), "Expired too early");
 
         // wait the remaining time and add a threshold, because
         ticker.add(Duration.ofMillis(50));
-        assertTrue("Request not released", rateLimiter.tryAcquire());
+        assertTrue(rateLimiter.tryAcquire(), "Request not released");
     }
 }
