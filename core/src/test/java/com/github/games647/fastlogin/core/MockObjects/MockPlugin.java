@@ -25,6 +25,7 @@
  */
 package com.github.games647.fastlogin.core.MockObjects;
 
+import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.fastlogin.core.AsyncScheduler;
 import com.github.games647.fastlogin.core.CommonUtil;
 import com.github.games647.fastlogin.core.RateLimiter;
@@ -49,6 +50,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.mockito.Mockito.lenient;
 
@@ -63,8 +65,10 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
     public MockPlugin() throws IOException {
         core = Mockito.mock(FastLoginCore.class);
         lenient().when(core.getPlugin()).thenReturn(this);
-        lenient().when(core.getPendingLogin()).thenReturn(CommonUtil.buildCache(5, -1));
 
+        // pendingLogin
+        ConcurrentMap<String, Object> pendingLogin = CommonUtil.buildCache(5, -1);
+        lenient().when(core.getPendingLogin()).thenReturn(pendingLogin);
 
         // load default config
         File configfile = new File(Objects.requireNonNull(getClass().getResource("/config.yml")).getPath());
@@ -75,6 +79,10 @@ public class MockPlugin implements PlatformPlugin<MockCommandSender> {
         // rate limiter
         RateLimiter rateLimiter = new TickingRateLimiter(Ticker.systemTicker(), 600, 10);
         lenient().when(core.getRateLimiter()).thenReturn(rateLimiter);
+
+        // resolver (fake Mojang API)
+        MojangResolver resolver = new MockResolver();
+        lenient().when(core.getResolver()).thenReturn(resolver);
 
         // storage
         HikariConfig databaseConfig = new HikariConfig();

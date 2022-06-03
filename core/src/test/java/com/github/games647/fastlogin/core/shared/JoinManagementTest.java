@@ -40,6 +40,7 @@ import java.net.UnknownHostException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class JoinManagementTest extends FastLoginCoreTest {
@@ -58,7 +59,8 @@ public class JoinManagementTest extends FastLoginCoreTest {
 
             @Override
             public void requestPremiumLogin(LoginSource source, StoredProfile profile, String username, boolean registered) {
-
+                String ip = source.getAddress().getAddress().getHostAddress();
+                core.getPendingLogin().put(ip + username, new Object());
             }
 
             @Override
@@ -93,5 +95,33 @@ public class JoinManagementTest extends FastLoginCoreTest {
 
         jm.onLogin(username, source);
         verify(jm).requestPremiumLogin(source, profile, username, true);
+    }
+
+    /*
+        secondAttemptCracked
+     */
+
+    @Test
+    public void secondAttemptCrackedTest() throws Exception {
+        String username = "crackPremiumName3";
+
+        plugin.getConfig().set("nameChangeCheck", true);
+        plugin.getConfig().set("autoRegister", true);
+        plugin.getConfig().set("secondAttemptCracked", true);
+
+        // first login attempt
+        // should request Premium login
+        byte[] ip = {0, 0, 5, 1};
+        InetSocketAddress address = new InetSocketAddress(InetAddress.getByAddress(ip), 25567);
+        MockLoginSource source = new MockLoginSource(address);
+        jm.onLogin(username, source);
+        verify(jm, never()).startCrackedSession(any(), any(), any());
+
+        // second login attempt
+        // should allow cracked login
+        address = new InetSocketAddress(InetAddress.getByAddress(ip), 25567);
+        source = new MockLoginSource(address);
+        jm.onLogin(username, source);
+        verify(jm).startCrackedSession(eq(source), any(), eq(username));
     }
 }
