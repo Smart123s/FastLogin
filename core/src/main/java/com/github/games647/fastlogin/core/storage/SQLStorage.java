@@ -131,15 +131,15 @@ public abstract class SQLStorage implements AuthStorage {
 
     private Optional<StoredProfile> parseResult(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
-            long userId = resultSet.getInt(1);
+            long userId = resultSet.getInt("UserID");
 
-            UUID uuid = Optional.ofNullable(resultSet.getString(2)).map(UUIDAdapter::parseId).orElse(null);
+            UUID uuid = Optional.ofNullable(resultSet.getString("UUID")).map(UUIDAdapter::parseId).orElse(null);
 
-            String name = resultSet.getString(3);
-            boolean premium = resultSet.getBoolean(4);
-            boolean floodgate = resultSet.getBoolean(5);
-            String lastIp = resultSet.getString(6);
-            Instant lastLogin = resultSet.getTimestamp(7).toInstant();
+            String name = resultSet.getString("Name");
+            boolean premium = resultSet.getBoolean("Premium");
+            boolean floodgate = resultSet.getBoolean("Floodgate");
+            String lastIp = resultSet.getString("LastIp");
+            Instant lastLogin = resultSet.getTimestamp("LastLogin").toInstant();
             return Optional.of(new StoredProfile(userId, uuid, name, premium, floodgate, lastIp, lastLogin));
         }
 
