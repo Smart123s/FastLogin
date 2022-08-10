@@ -88,4 +88,31 @@ public class MigrationManager {
         return -1;
     }
 
+    protected void migrateTable(MigratableStorage table) {
+        int initialVersion = getTableVersion(table.getTableName());
+
+        // special case: table premium was created before the migration manager
+        if (initialVersion == 0 && "premium".equals(table.getTableName()) && table.tableExists()) {
+            initialVersion = 1;
+        }
+
+        for (int i = initialVersion; i < table.getLatestTableVersion(); i++) {
+            core.getPlugin().getLog().info("Starting database migration of table {} to version {}", table, i + 1);
+            try (Connection con = dataSource.getConnection()) {
+                Statement migrateStmt = con.createStatement();
+                migrateStmt.execute(table.getMigrationStatement(i));
+
+                // add entry to migrations table
+                PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION);
+                saveStmt.setString(1, table.getTableName());
+                saveStmt.setInt(2, i + 1);
+                saveStmt.execute();
+            } catch (SQLException sqlEx) {
+                core.getPlugin().getLog().error("Failed to migrate table {} to version {}", table, i + 1, sqlEx);
+                return;
+            }
+            core.getPlugin().getLog().info("Table {} has been successfully migrated to version {}", table, i + 1);
+        }
+    }
+
 }
