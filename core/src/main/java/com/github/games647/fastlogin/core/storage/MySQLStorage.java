@@ -34,6 +34,8 @@ public class MySQLStorage extends SQLStorage {
     private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String MARIADB_DRIVER = "fastlogin.mariadb.jdbc.Driver";
 
+    private static final String TABLE_EXISTS = "SHOW TABLES LIKE '" + PREMIUM_TABLE + "'";
+
     public MySQLStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String database,
                         HikariConfig config, boolean useSSL) {
         super(core, setParams(config, driver, host, port, database, useSSL));
@@ -105,4 +107,10 @@ public class MySQLStorage extends SQLStorage {
         // In our case it can be useful to see the time in error messages
         // config.addDataSourceProperty("maintainTimeStats", false);
     }
+
+    @Override
+    protected String getTableExistsStatement() {
+        return TABLE_EXISTS;
+    }
+
 }
