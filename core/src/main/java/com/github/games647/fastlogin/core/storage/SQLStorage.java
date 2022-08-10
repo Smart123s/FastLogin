@@ -96,6 +96,12 @@ public abstract class SQLStorage implements AuthStorage, MigratableStorage {
         }
     }
 
+    public void migrateTable() throws SQLException {
+        MigrationManager migrationManager = new MigrationManager(core, dataSource);
+        migrationManager.createTables();
+        migrationManager.migrateTable(this);
+    }
+
     @Override
     public StoredProfile loadProfile(String name) {
         try (Connection con = dataSource.getConnection();
