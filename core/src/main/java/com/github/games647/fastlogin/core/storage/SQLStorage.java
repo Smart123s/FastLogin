@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadFactory;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
-public abstract class SQLStorage implements AuthStorage {
+public abstract class SQLStorage implements AuthStorage, MigratableStorage {
 
     protected static final String PREMIUM_TABLE = "premium";
     protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
@@ -188,6 +188,26 @@ public abstract class SQLStorage implements AuthStorage {
         } catch (SQLException ex) {
             core.getPlugin().getLog().error("Failed to save playerProfile {}", playerProfile, ex);
         }
+    }
+
+    @Override
+    public String getMigrationStatement(int currentVersion) {
+        switch (currentVersion) {
+            case 1:
+                return "ALTER TABLE " + PREMIUM_TABLE + " ADD COLUMN Floodgate BOOLEAN";
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public int getLatestTableVersion() {
+        return 2;
+    }
+
+    @Override
+    public String getTableName() {
+        return PREMIUM_TABLE;
     }
 
     @Override
