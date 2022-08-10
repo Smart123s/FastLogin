@@ -43,6 +43,9 @@ import org.sqlite.SQLiteConfig;
 public class SQLiteStorage extends SQLStorage {
 
     private static final String SQLITE_DRIVER = "org.sqlite.SQLiteDataSource";
+
+    private static final String TABLE_EXISTS = "SELECT name FROM sqlite_schema "
+            + "WHERE type='table' AND name='" + PREMIUM_TABLE + "'";
     private final Lock lock = new ReentrantLock();
 
     public SQLiteStorage(FastLoginCore<?, ?, ?> core, String databasePath, HikariConfig config) {
@@ -116,4 +119,10 @@ public class SQLiteStorage extends SQLStorage {
         String pluginFolder = plugin.getPluginFolder().toAbsolutePath().toString();
         return input.replace("{pluginDir}", pluginFolder);
     }
+
+    @Override
+    protected String getTableExistsStatement() {
+        return TABLE_EXISTS;
+    }
+
 }

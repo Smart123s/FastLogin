@@ -205,6 +205,25 @@ public abstract class SQLStorage implements AuthStorage, MigratableStorage {
         return 2;
     }
 
+    protected abstract String getTableExistsStatement();
+
+    @Override
+    public boolean tableExists() {
+        try (Connection con = dataSource.getConnection();
+                Statement loadStmt = con.createStatement()) {
+
+            try (ResultSet resultSet = loadStmt.executeQuery(getTableExistsStatement())) {
+                if (resultSet.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException sqlEx) {
+            core.getPlugin().getLog().error("Failed to query version of table {}", PREMIUM_TABLE, sqlEx);
+        }
+
+        return false;
+    }
+
     @Override
     public String getTableName() {
         return PREMIUM_TABLE;
