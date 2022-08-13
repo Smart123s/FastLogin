@@ -39,11 +39,11 @@ public class StoredProfile extends Profile {
     private final ReentrantLock saveLock = new ReentrantLock();
 
     private boolean premium;
-    private boolean floodgate;
+    private Boolean floodgate;
     private String lastIp;
     private Instant lastLogin;
 
-    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, boolean floodgate, String lastIp,
+    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, Boolean floodgate, String lastIp,
             Instant lastLogin) {
         super(uuid, playerName);
 
@@ -106,6 +106,10 @@ public class StoredProfile extends Profile {
 
     public synchronized boolean isFloodgate() {
         return floodgate;
+    }
+
+    public synchronized boolean isFloodgateMigrated() {
+        return floodgate != null;
     }
 
     public synchronized void setFloodgate(boolean floodgate) {

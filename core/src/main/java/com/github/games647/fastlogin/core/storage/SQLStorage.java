@@ -143,7 +143,11 @@ public abstract class SQLStorage implements AuthStorage, MigratableStorage {
 
             String name = resultSet.getString("Name");
             boolean premium = resultSet.getBoolean("Premium");
-            boolean floodgate = resultSet.getBoolean("Floodgate");
+            Boolean floodgate = resultSet.getBoolean("Floodgate");
+            // if the player wasn't migrated to the new database format
+            if (resultSet.wasNull()) {
+                floodgate = null;
+            }
             String lastIp = resultSet.getString("LastIp");
             Instant lastLogin = resultSet.getTimestamp("LastLogin").toInstant();
             return Optional.of(new StoredProfile(userId, uuid, name, premium, floodgate, lastIp, lastLogin));
