@@ -62,7 +62,10 @@ public class MigrationManager {
     protected void createTables() throws SQLException {
         try (Connection con = dataSource.getConnection();
                 Statement createStmt = con.createStatement()) {
-            if (dataSource.getDriverClassName().contains("sqlite")) {
+
+            // if (dataSource.getDriverClassName().contains("sqlite")) {
+            // throws: the return value of "fastlogin.hikari.HikariDataSource.getDriverClassName()" is null
+            if (core.getStorage() instanceof SQLiteStorage) {
                 createStmt.executeUpdate(CREATE_TABLE_STMT.replace("AUTO_INCREMENT", "AUTOINCREMENT"));
             } else {
                 createStmt.executeUpdate(CREATE_TABLE_STMT);
