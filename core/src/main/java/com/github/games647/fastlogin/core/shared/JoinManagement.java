@@ -67,7 +67,11 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             return;
         }
 
-        if (profile.isFloodgate()) {
+        if (!profile.isFloodgateMigrated()) {
+            profile.setFloodgate(false);
+            core.getPlugin().getLog().info(
+                    "Player {} will be migrated to the v2 database schema as a JAVA user", username);
+        } else if (profile.isFloodgate()) {
             core.getPlugin().getLog().warn("Player {} is already stored by FastLogin as a Bedrock Edition player",
                     username);
             return;
