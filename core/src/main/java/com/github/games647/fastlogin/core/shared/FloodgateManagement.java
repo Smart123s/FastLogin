@@ -85,13 +85,24 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
             // linked players are stored as Java (= not Floodgate) players
             profile.setFloodgate(!isLinked);
         } else {
-            if (!profile.isFloodgate() && !isLinked) {
-                core.getPlugin().getLog().warn("Player {} is already stored by FastLogin as a Java Edition player",
+            if (!profile.isFloodgateMigrated()) {
+                if (isLinked) {
+                    profile.setFloodgate(false);
+                    core.getPlugin().getLog().info(
+                            "Player {} will be migrated to the v2 database schema as a JAVA (linked Floodgate) user",
+                            username);
+                } else {
+                    profile.setFloodgate(true);
+                    core.getPlugin().getLog().info(
+                            "Player {} will be migrated to the v2 database schema as a Floodgate user", username);
+                }
+            } else if (!profile.isFloodgate() && !isLinked) {
+                core.getPlugin().getLog().info("Player {} is already stored by FastLogin as a Java Edition player",
                         username);
                 return;
             } else if (profile.isFloodgate() && isLinked) {
                 core.getPlugin().getLog()
-                        .warn("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
+                        .info("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
                                 username);
                 return;
             }
