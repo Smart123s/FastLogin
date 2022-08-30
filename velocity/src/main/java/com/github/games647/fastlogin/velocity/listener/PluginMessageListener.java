@@ -124,7 +124,7 @@ public class PluginMessageListener {
             loginSession.setRegistered(true);
             if (!loginSession.isAlreadySaved()) {
                 playerProfile.setPremium(true);
-                plugin.getCore().getStorage().save(playerProfile);
+                plugin.getCore().getAuthStorage().save(playerProfile);
                 loginSession.setAlreadySaved(true);
             }
         }

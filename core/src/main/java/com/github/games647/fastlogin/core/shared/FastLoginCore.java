@@ -37,6 +37,7 @@ import com.github.games647.fastlogin.core.hooks.DefaultPasswordGenerator;
 import com.github.games647.fastlogin.core.hooks.PasswordGenerator;
 import com.github.games647.fastlogin.core.mojang.ProxyAgnosticMojangResolver;
 import com.github.games647.fastlogin.core.storage.MySQLStorage;
+import com.github.games647.fastlogin.core.storage.SQLAuthStorage;
 import com.github.games647.fastlogin.core.storage.SQLStorage;
 import com.github.games647.fastlogin.core.storage.SQLiteStorage;
 import com.google.common.base.Ticker;
@@ -202,8 +203,8 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
         return resolver;
     }
 
-    public SQLStorage getStorage() {
-        return storage;
+    public SQLAuthStorage getAuthStorage() {
+        return storage.getAuthStorage();
     }
 
     public T getPlugin() {

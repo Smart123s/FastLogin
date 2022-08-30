@@ -63,14 +63,14 @@ public class CrackedCommand extends ToggleCommand {
         }
 
         // todo: load async if
-        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+        StoredProfile profile = plugin.getCore().getAuthStorage().loadProfile(sender.getName());
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("remove-premium", sender);
 
             profile.setPremium(false);
             profile.setId(null);
             plugin.getScheduler().runAsync(() -> {
-                plugin.getCore().getStorage().save(profile);
+                plugin.getCore().getAuthStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
                         new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
             });
@@ -89,7 +89,7 @@ public class CrackedCommand extends ToggleCommand {
         }
 
         //todo: load async
-        StoredProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+        StoredProfile profile = plugin.getCore().getAuthStorage().loadProfile(args[0]);
         if (profile == null) {
             sender.sendMessage("Error occurred");
             return;
@@ -103,7 +103,7 @@ public class CrackedCommand extends ToggleCommand {
 
             profile.setPremium(false);
             plugin.getScheduler().runAsync(() -> {
-                plugin.getCore().getStorage().save(profile);
+                plugin.getCore().getAuthStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
                         new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
             });

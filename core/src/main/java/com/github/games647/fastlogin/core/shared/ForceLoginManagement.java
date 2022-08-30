@@ -28,7 +28,7 @@ package com.github.games647.fastlogin.core.shared;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.hooks.AuthPlugin;
 import com.github.games647.fastlogin.core.shared.event.FastLoginAutoLoginEvent;
-import com.github.games647.fastlogin.core.storage.SQLStorage;
+import com.github.games647.fastlogin.core.storage.SQLAuthStorage;
 
 public abstract class ForceLoginManagement<P extends C, C, L extends LoginSession, T extends PlatformPlugin<C>>
         implements Runnable {
@@ -55,7 +55,7 @@ public abstract class ForceLoginManagement<P extends C, C, L extends LoginSessio
             return;
         }
 
-        SQLStorage storage = core.getStorage();
+        SQLAuthStorage storage = core.getAuthStorage();
         StoredProfile playerProfile = session.getProfile();
         try {
             if (isOnlineMode()) {

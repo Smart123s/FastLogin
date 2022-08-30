@@ -69,7 +69,7 @@ public class AsyncToggleMessage implements Runnable {
     }
 
     private void turnOffPremium() {
-        StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
+        StoredProfile playerProfile = core.getAuthStorage().loadProfile(targetPlayer);
         //existing player is already cracked
         if (playerProfile.isSaved() && !playerProfile.isPremium()) {
             sendMessage("not-premium");
@@ -78,7 +78,7 @@ public class AsyncToggleMessage implements Runnable {
 
         playerProfile.setPremium(false);
         playerProfile.setId(null);
-        core.getStorage().save(playerProfile);
+        core.getAuthStorage().save(playerProfile);
         PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
             ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getEventManager().fire(
@@ -87,14 +87,14 @@ public class AsyncToggleMessage implements Runnable {
     }
 
     private void activatePremium() {
-        StoredProfile playerProfile = core.getStorage().loadProfile(targetPlayer);
+        StoredProfile playerProfile = core.getAuthStorage().loadProfile(targetPlayer);
         if (playerProfile.isPremium()) {
             sendMessage("already-exists");
             return;
         }
 
         playerProfile.setPremium(true);
-        core.getStorage().save(playerProfile);
+        core.getAuthStorage().save(playerProfile);
         PremiumToggleReason reason = (!isPlayerSender || !senderName.equalsIgnoreCase(playerProfile.getName()))
             ? PremiumToggleReason.COMMAND_OTHER : PremiumToggleReason.COMMAND_SELF;
         core.getPlugin().getProxy().getEventManager().fire(

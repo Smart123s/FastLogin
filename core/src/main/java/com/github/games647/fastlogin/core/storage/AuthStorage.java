@@ -35,6 +35,4 @@ public interface AuthStorage {
     StoredProfile loadProfile(UUID uuid);
 
     void save(StoredProfile playerProfile);
-
-    void close();
 }

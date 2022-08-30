@@ -34,7 +34,7 @@ public class MySQLStorage extends SQLStorage {
     private static final String MYSQL_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String MARIADB_DRIVER = "fastlogin.mariadb.jdbc.Driver";
 
-    private static final String TABLE_EXISTS = "SHOW TABLES LIKE '" + PREMIUM_TABLE + "'";
+    private static final String TABLE_EXISTS = "SHOW TABLES LIKE ?";
 
     public MySQLStorage(FastLoginCore<?, ?, ?> core, String driver, String host, int port, String database,
                         HikariConfig config, boolean useSSL) {

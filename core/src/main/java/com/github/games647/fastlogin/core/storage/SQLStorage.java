@@ -25,52 +25,25 @@
  */
 package com.github.games647.fastlogin.core.storage;
 
-import com.github.games647.craftapi.UUIDAdapter;
-import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ThreadFactory;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-
-public abstract class SQLStorage implements AuthStorage, MigratableStorage {
-
-    protected static final String PREMIUM_TABLE = "premium";
-    protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + PREMIUM_TABLE + "` ("
-            + "`UserID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
-            + "`UUID` CHAR(36), "
-            + "`Name` VARCHAR(16) NOT NULL, "
-            + "`Premium` BOOLEAN NOT NULL, "
-            + "`Floodgate` BOOLEAN NOT NULL, "
-            + "`LastIp` VARCHAR(255) NOT NULL, "
-            + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            //the premium shouldn't steal the cracked account by changing the name
-            + "UNIQUE (`Name`) "
-            + ')';
-
-    protected static final String LOAD_BY_NAME = "SELECT * FROM `" + PREMIUM_TABLE
-            + "` WHERE `Name`=? LIMIT 1";
-    protected static final String LOAD_BY_UUID = "SELECT * FROM `" + PREMIUM_TABLE
-            + "` WHERE `UUID`=? LIMIT 1";
-    protected static final String INSERT_PROFILE = "INSERT INTO `" + PREMIUM_TABLE
-            + "` (`UUID`, `Name`, `Premium`, `Floodgate`, `LastIp`) " + "VALUES (?, ?, ?, ?, ?) ";
-    // limit not necessary here, because it's unique
-    protected static final String UPDATE_PROFILE = "UPDATE `" + PREMIUM_TABLE
-            + "` SET `UUID`=?, `Name`=?, `Premium`=?, `Floodgate`=?, `LastIp`=?, "
-            + "`LastLogin`=CURRENT_TIMESTAMP WHERE `UserID`=?";
+public abstract class SQLStorage {
 
     protected final FastLoginCore<?, ?, ?> core;
+
+    @Getter
     protected final HikariDataSource dataSource;
+
+    private final MigrationManager migrationManager;
+
+    @Getter
+    private final SQLAuthStorage authStorage;
 
     public SQLStorage(FastLoginCore<?, ?, ?> core, HikariConfig config) {
         this.core = core;
@@ -82,164 +55,22 @@ public abstract class SQLStorage implements AuthStorage, MigratableStorage {
         }
 
         this.dataSource = new HikariDataSource(config);
+
+        this.migrationManager = new MigrationManager(core, this);
+        this.authStorage = new SQLAuthStorage(core, this);
     }
 
     public void createTables() throws SQLException {
-        // choose surrogate PK(ID), because UUID can be null for offline players
-        // if UUID is always Premium UUID we would have to update offline player entries on insert
-        // name cannot be PK, because it can be changed for premium players
-
-        //todo: add unique uuid index usage
-        try (Connection con = dataSource.getConnection();
-             Statement createStmt = con.createStatement()) {
-            createStmt.executeUpdate(CREATE_TABLE_STMT);
-        }
-    }
-
-    public void migrateTable() throws SQLException {
-        MigrationManager migrationManager = new MigrationManager(core, dataSource);
         migrationManager.createTables();
-        migrationManager.migrateTable(this);
+        authStorage.createTables();
     }
 
-    @Override
-    public StoredProfile loadProfile(String name) {
-        try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_NAME)
-        ) {
-            loadStmt.setString(1, name);
-
-            try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, false, ""));
-            }
-        } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query profile: {}", name, sqlEx);
-        }
-
-        return null;
-    }
-
-    @Override
-    public StoredProfile loadProfile(UUID uuid) {
-        try (Connection con = dataSource.getConnection();
-             PreparedStatement loadStmt = con.prepareStatement(LOAD_BY_UUID)) {
-            loadStmt.setString(1, UUIDAdapter.toMojangId(uuid));
-
-            try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElse(null);
-            }
-        } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query profile: {}", uuid, sqlEx);
-        }
-
-        return null;
-    }
-
-    private Optional<StoredProfile> parseResult(ResultSet resultSet) throws SQLException {
-        if (resultSet.next()) {
-            long userId = resultSet.getInt("UserID");
-
-            UUID uuid = Optional.ofNullable(resultSet.getString("UUID")).map(UUIDAdapter::parseId).orElse(null);
-
-            String name = resultSet.getString("Name");
-            boolean premium = resultSet.getBoolean("Premium");
-            Boolean floodgate = resultSet.getBoolean("Floodgate");
-            // if the player wasn't migrated to the new database format
-            if (resultSet.wasNull()) {
-                floodgate = null;
-            }
-            String lastIp = resultSet.getString("LastIp");
-            Instant lastLogin = resultSet.getTimestamp("LastLogin").toInstant();
-            return Optional.of(new StoredProfile(userId, uuid, name, premium, floodgate, lastIp, lastLogin));
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public void save(StoredProfile playerProfile) {
-        try (Connection con = dataSource.getConnection()) {
-            String uuid = playerProfile.getOptId().map(UUIDAdapter::toMojangId).orElse(null);
-
-            playerProfile.getSaveLock().lock();
-            try {
-                if (playerProfile.isSaved()) {
-                    try (PreparedStatement saveStmt = con.prepareStatement(UPDATE_PROFILE)) {
-                        saveStmt.setString(1, uuid);
-                        saveStmt.setString(2, playerProfile.getName());
-                        saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setBoolean(4, playerProfile.isFloodgate());
-                        saveStmt.setString(5, playerProfile.getLastIp());
-
-                        saveStmt.setLong(6, playerProfile.getRowId());
-                        saveStmt.execute();
-                    }
-                } else {
-                    try (PreparedStatement saveStmt = con.prepareStatement(INSERT_PROFILE, RETURN_GENERATED_KEYS)) {
-                        saveStmt.setString(1, uuid);
-
-                        saveStmt.setString(2, playerProfile.getName());
-                        saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setBoolean(4, playerProfile.isFloodgate());
-                        saveStmt.setString(5, playerProfile.getLastIp());
-
-                        saveStmt.execute();
-                        try (ResultSet generatedKeys = saveStmt.getGeneratedKeys()) {
-                            if (generatedKeys.next()) {
-                                playerProfile.setRowId(generatedKeys.getInt(1));
-                            }
-                        }
-                    }
-                }
-            } finally {
-                playerProfile.getSaveLock().unlock();
-            }
-        } catch (SQLException ex) {
-            core.getPlugin().getLog().error("Failed to save playerProfile {}", playerProfile, ex);
-        }
-    }
-
-    @Override
-    public String getMigrationStatement(int currentVersion) {
-        switch (currentVersion) {
-            case 1:
-                return "ALTER TABLE " + PREMIUM_TABLE + " ADD COLUMN Floodgate BOOLEAN";
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public int getLatestTableVersion() {
-        return 2;
+    public void migrateTable() {
+        migrationManager.migrateTable(authStorage);
     }
 
     protected abstract String getTableExistsStatement();
 
-    @Override
-    public boolean tableExists() {
-        try (Connection con = dataSource.getConnection();
-                Statement loadStmt = con.createStatement()) {
-
-            try (ResultSet resultSet = loadStmt.executeQuery(getTableExistsStatement())) {
-                if (resultSet.next()) {
-                    return true;
-                }
-            }
-        } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query version of table {}", PREMIUM_TABLE, sqlEx);
-        }
-
-        return false;
-    }
-
-    @Override
-    public String getTableName() {
-        return PREMIUM_TABLE;
-    }
-
-    @Override
     public void close() {
         dataSource.close();
     }

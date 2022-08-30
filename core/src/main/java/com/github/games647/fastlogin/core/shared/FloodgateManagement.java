@@ -76,11 +76,11 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         //this happens on Bukkit if it's connected to Bungee
         //if that's the case, players will be logged in via plugin messages
-        if (core.getStorage() == null) {
+        if (core.getAuthStorage() == null) {
             return;
         }
 
-        profile = core.getStorage().loadProfile(username);
+        profile = core.getAuthStorage().loadProfile(username);
         if (!profile.isSaved()) {
             // linked players are stored as Java (= not Floodgate) players
             profile.setFloodgate(!isLinked);

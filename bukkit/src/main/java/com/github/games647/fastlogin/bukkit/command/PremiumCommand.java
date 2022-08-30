@@ -78,14 +78,14 @@ public class PremiumCommand extends ToggleCommand {
 
         plugin.getCore().getPendingConfirms().remove(id);
         //todo: load async
-        StoredProfile profile = plugin.getCore().getStorage().loadProfile(sender.getName());
+        StoredProfile profile = plugin.getCore().getAuthStorage().loadProfile(sender.getName());
         if (profile.isPremium()) {
             plugin.getCore().sendLocaleMessage("already-exists", sender);
         } else {
             //todo: resolve uuid
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
-                plugin.getCore().getStorage().save(profile);
+                plugin.getCore().getAuthStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
                         new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_SELF));
             });
@@ -104,7 +104,7 @@ public class PremiumCommand extends ToggleCommand {
         }
 
         //todo: load async
-        StoredProfile profile = plugin.getCore().getStorage().loadProfile(args[0]);
+        StoredProfile profile = plugin.getCore().getAuthStorage().loadProfile(args[0]);
         if (profile == null) {
             plugin.getCore().sendLocaleMessage("player-unknown", sender);
             return;
@@ -116,7 +116,7 @@ public class PremiumCommand extends ToggleCommand {
             //todo: resolve uuid
             profile.setPremium(true);
             plugin.getScheduler().runAsync(() -> {
-                plugin.getCore().getStorage().save(profile);
+                plugin.getCore().getAuthStorage().save(profile);
                 plugin.getServer().getPluginManager().callEvent(
                         new BukkitFastLoginPremiumToggleEvent(profile, PremiumToggleReason.COMMAND_OTHER));
             });

@@ -60,7 +60,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
             }
         }
 
-        StoredProfile profile = core.getStorage().loadProfile(username);
+        StoredProfile profile = core.getAuthStorage().loadProfile(username);
 
         //can't be a premium Java player, if it's not saved in the database
         if (profile == null) {
@@ -152,7 +152,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
     private boolean checkNameChange(S source, String username, Profile profile) {
         //user not exists in the db
         if (core.getConfig().get("nameChangeCheck", false)) {
-            StoredProfile storedProfile = core.getStorage().loadProfile(profile.getId());
+            StoredProfile storedProfile = core.getAuthStorage().loadProfile(profile.getId());
             if (storedProfile != null) {
                 if (storedProfile.isFloodgate()) {
                     core.getPlugin().getLog()

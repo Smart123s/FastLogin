@@ -26,7 +26,6 @@
 package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
-import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,20 +51,20 @@ public class MigrationManager {
 
     protected final FastLoginCore<?, ?, ?> core;
 
-    protected final HikariDataSource dataSource;
+    protected final SQLStorage storage;
 
-    protected MigrationManager(FastLoginCore<?, ?, ?> core, HikariDataSource dataSource) {
+    protected MigrationManager(FastLoginCore<?, ?, ?> core, SQLStorage storage) {
         this.core = core;
-        this.dataSource = dataSource;
+        this.storage = storage;
     }
 
     protected void createTables() throws SQLException {
-        try (Connection con = dataSource.getConnection();
+        try (Connection con = storage.getDataSource().getConnection();
                 Statement createStmt = con.createStatement()) {
 
             // if (dataSource.getDriverClassName().contains("sqlite")) {
             // throws: the return value of "fastlogin.hikari.HikariDataSource.getDriverClassName()" is null
-            if (core.getStorage() instanceof SQLiteStorage) {
+            if (storage instanceof SQLiteStorage) {
                 createStmt.executeUpdate(CREATE_TABLE_STMT.replace("AUTO_INCREMENT", "AUTOINCREMENT"));
             } else {
                 createStmt.executeUpdate(CREATE_TABLE_STMT);
@@ -75,7 +74,7 @@ public class MigrationManager {
     }
 
     protected int getTableVersion(String table) {
-        try (Connection con = dataSource.getConnection();
+        try (Connection con = storage.getDataSource().getConnection();
                 PreparedStatement loadStmt = con.prepareStatement(LOAD_TABLE_VERSION)) {
             loadStmt.setString(1, table);
 
@@ -102,7 +101,7 @@ public class MigrationManager {
         for (int i = initialVersion; i < table.getLatestTableVersion(); i++) {
             core.getPlugin().getLog().info("Starting database migration of table {} to version {}",
                     table.getTableName(), i + 1);
-            try (Connection con = dataSource.getConnection();
+            try (Connection con = storage.getDataSource().getConnection();
                     Statement migrateStmt = con.createStatement();
                     PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION);
                 ) {
