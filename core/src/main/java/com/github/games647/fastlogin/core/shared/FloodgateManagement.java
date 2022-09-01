@@ -81,10 +81,7 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         }
 
         profile = core.getAuthStorage().loadProfile(username);
-        if (!profile.isSaved()) {
-            // linked players are stored as Java (= not Floodgate) players
-            profile.setFloodgate(!isLinked);
-        } else {
+        if (profile.isSaved()) {
             if (!profile.isFloodgateMigrated()) {
                 if (isLinked) {
                     profile.setFloodgate(false);
@@ -106,6 +103,9 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                                 username);
                 return;
             }
+        } else {
+            // linked players are stored as Java (= not Floodgate) players
+            profile.setFloodgate(!isLinked);
         }
 
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
