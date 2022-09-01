@@ -199,7 +199,7 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
     }
 
     @Override
-    public int getLatestTableVersion() {
+    public int getRequiredVersion() {
         return 2;
     }
 

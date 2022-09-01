@@ -73,7 +73,12 @@ public class MigrationManager {
         }
     }
 
-    protected int getTableVersion(MigratableStorage table) {
+    /**
+     * Check the current version of a table stored in the connected database
+     * @param table the table to check
+     * @return the current version
+     */
+    protected int getCurrentTableVersion(MigratableStorage table) {
         try (Connection con = storage.getDataSource().getConnection();
                 PreparedStatement loadStmt = con.prepareStatement(LOAD_TABLE_VERSION)) {
             loadStmt.setString(1, table.getTableName());
@@ -98,9 +103,9 @@ public class MigrationManager {
     }
 
     protected void migrateTable(MigratableStorage table) {
-        int initialVersion = getTableVersion(table);
+        int initialVersion = getCurrentTableVersion(table);
 
-        for (int i = initialVersion; i < table.getLatestTableVersion(); i++) {
+        for (int i = initialVersion; i < table.getRequiredVersion(); i++) {
             core.getPlugin().getLog().info("Starting database migration of table {} to version {}",
                     table.getTableName(), i + 1);
             try (Connection con = storage.getDataSource().getConnection();
