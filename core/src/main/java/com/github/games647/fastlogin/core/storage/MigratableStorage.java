@@ -34,8 +34,6 @@ public interface MigratableStorage {
      */
     String getMigrationStatement(int currentVersion);
 
-    boolean tableExists();
-
     /**
      * @return the version of the database table required by the current code
      */

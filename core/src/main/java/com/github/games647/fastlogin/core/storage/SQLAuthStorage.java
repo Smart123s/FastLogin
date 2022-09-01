@@ -204,22 +204,6 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
     }
 
     @Override
-    public boolean tableExists() {
-        try (Connection con = storage.getDataSource().getConnection();
-                PreparedStatement loadStmt = con.prepareStatement(storage.getTableExistsStatement())) {
-            loadStmt.setString(1, PREMIUM_TABLE);
-
-            try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return resultSet.next();
-            }
-        } catch (SQLException sqlEx) {
-            core.getPlugin().getLog().error("Failed to query version of table {}", PREMIUM_TABLE, sqlEx);
-        }
-
-        return false;
-    }
-
-    @Override
     public String getTableName() {
         return PREMIUM_TABLE;
     }

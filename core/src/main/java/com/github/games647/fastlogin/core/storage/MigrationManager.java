@@ -93,7 +93,7 @@ public class MigrationManager {
                     int version = resultSet.getInt(1);
 
                     // special case: table premium was created before the migration manager
-                    if (version == 0 && "premium".equals(table.getTableName()) && table.tableExists()) {
+                    if (version == 0 && "premium".equals(table.getTableName()) && tableExists(table)) {
                         version = 1;
                     }
 
@@ -131,6 +131,21 @@ public class MigrationManager {
             core.getPlugin().getLog().info("Table {} has been successfully migrated to version {}",
                     table.getTableName(), i + 1);
         }
+    }
+
+    private boolean tableExists(MigratableStorage table) {
+        try (Connection con = storage.getDataSource().getConnection();
+             PreparedStatement loadStmt = con.prepareStatement(storage.getTableExistsStatement())) {
+            loadStmt.setString(1, table.getTableName());
+
+            try (ResultSet resultSet = loadStmt.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException sqlEx) {
+            core.getPlugin().getLog().error("Failed to query version of table {}", table.getTableName(), sqlEx);
+        }
+
+        return false;
     }
 
 }
