@@ -33,13 +33,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * A database table that stores schema changes made to another table.
+ * For example, changes may be necessary if the plugin needs to store additional data.
+ * Each row stands for one schema change alias migration.
+ */
 public class MigrationManager {
 
     protected static final String MIGRATION_TABLE = "migrations";
     protected static final String CREATE_TABLE_STMT = "CREATE TABLE IF NOT EXISTS `" + MIGRATION_TABLE + "` ("
             + "`ID` INTEGER PRIMARY KEY AUTO_INCREMENT, "
             + "`Table` VARCHAR(32), "
-            + "`Version` INTEGER NOT NULL, "
+            + "`Version` INTEGER NOT NULL, " // the version the table was migrated to
             + "`Date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
             + ')';
 
