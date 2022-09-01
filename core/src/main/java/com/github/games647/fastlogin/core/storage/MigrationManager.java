@@ -73,14 +73,21 @@ public class MigrationManager {
         }
     }
 
-    protected int getTableVersion(String table) {
+    protected int getTableVersion(MigratableStorage table) {
         try (Connection con = storage.getDataSource().getConnection();
                 PreparedStatement loadStmt = con.prepareStatement(LOAD_TABLE_VERSION)) {
-            loadStmt.setString(1, table);
+            loadStmt.setString(1, table.getTableName());
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet.getInt(1);
+                    int version = resultSet.getInt(1);
+
+                    // special case: table premium was created before the migration manager
+                    if (version == 0 && "premium".equals(table.getTableName()) && table.tableExists()) {
+                        version = 1;
+                    }
+
+                    return version;
                 }
             }
         } catch (SQLException sqlEx) {
@@ -91,12 +98,7 @@ public class MigrationManager {
     }
 
     protected void migrateTable(MigratableStorage table) {
-        int initialVersion = getTableVersion(table.getTableName());
-
-        // special case: table premium was created before the migration manager
-        if (initialVersion == 0 && "premium".equals(table.getTableName()) && table.tableExists()) {
-            initialVersion = 1;
-        }
+        int initialVersion = getTableVersion(table);
 
         for (int i = initialVersion; i < table.getLatestTableVersion(); i++) {
             core.getPlugin().getLog().info("Starting database migration of table {} to version {}",
