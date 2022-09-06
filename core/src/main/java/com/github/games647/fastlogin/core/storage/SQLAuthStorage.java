@@ -197,4 +197,9 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
     public String getTableName() {
         return PREMIUM_TABLE;
     }
+
+    @Override
+    public void close() {
+        storage.close();
+    }
 }
