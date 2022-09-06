@@ -27,11 +27,17 @@ package com.github.games647.fastlogin.core.storage;
 
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A database table that stores schema changes made to another table.
@@ -117,7 +123,9 @@ public class MigrationManager {
                     Statement migrateStmt = con.createStatement();
                     PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION);
                 ) {
-                migrateStmt.executeUpdate(table.getMigrationStatement(i));
+                for (String statement : getMigrationStatement(table, i)) {
+                    migrateStmt.executeUpdate(statement);
+                }
 
                 // add entry to migrations table
                 saveStmt.setString(1, table.getTableName());
@@ -130,6 +138,35 @@ public class MigrationManager {
             }
             core.getPlugin().getLog().info("Table {} has been successfully migrated to version {}",
                     table.getTableName(), i + 1);
+        }
+    }
+
+    /**
+     * Get an SQL statement to migrate the table to the next version
+     * @param table the database table to be migrated
+     * @param currentVersion the current version of the table
+     * @return an SQL statement to migrate the table to the next version
+     */
+    public List<String> getMigrationStatement(MigratableStorage table, int currentVersion) {
+        String fileName = "sql/migrations/" + table.getTableName() + "_v" + (currentVersion + 1) + ".sql";
+        return loadFromResources(fileName);
+    }
+
+    /**
+     * Load a file from the resources directory.
+     * @param path the path of the file to load
+     * @return a List containing the lines of the file
+     */
+    private List<String> loadFromResources(String path) {
+        try (InputStream ioStream = this.getClass()
+                .getClassLoader()
+                .getResourceAsStream(path);
+             InputStreamReader isr = new InputStreamReader(ioStream);
+             BufferedReader br = new BufferedReader(isr)) {
+            return br.lines().collect(Collectors.toList());
+        } catch (IOException e) {
+            core.getPlugin().getLog().error("Failed to load migration statements");
+            throw new RuntimeException(e);
         }
     }
 

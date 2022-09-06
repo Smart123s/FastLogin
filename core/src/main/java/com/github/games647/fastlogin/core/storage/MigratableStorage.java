@@ -28,13 +28,6 @@ package com.github.games647.fastlogin.core.storage;
 public interface MigratableStorage {
 
     /**
-     * Get an SQL statement to migrate the table to the next version.
-     * @param currentVersion The current version of the table
-     * @return an SQL statement to migrate the table to the next version
-     */
-    String getMigrationStatement(int currentVersion);
-
-    /**
      * @return the version of the database table required by the current code
      */
     int getRequiredVersion();

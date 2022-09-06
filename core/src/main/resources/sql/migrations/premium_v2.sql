@@ -1,0 +1,1 @@
+ALTER TABLE premium ADD COLUMN Floodgate BOOLEAN;

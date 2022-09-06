@@ -189,16 +189,6 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
     }
 
     @Override
-    public String getMigrationStatement(int currentVersion) {
-        switch (currentVersion) {
-        case 1:
-            return "ALTER TABLE " + PREMIUM_TABLE + " ADD COLUMN Floodgate BOOLEAN";
-        default:
-            return null;
-        }
-    }
-
-    @Override
     public int getRequiredVersion() {
         return 2;
     }
