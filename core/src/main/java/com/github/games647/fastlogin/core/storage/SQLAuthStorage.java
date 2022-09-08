@@ -28,6 +28,7 @@ package com.github.games647.fastlogin.core.storage;
 import com.github.games647.craftapi.UUIDAdapter;
 import com.github.games647.fastlogin.core.StoredProfile;
 import com.github.games647.fastlogin.core.shared.FastLoginCore;
+import com.github.games647.fastlogin.core.shared.FloodgateState;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,7 +49,7 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
             + "`UUID` CHAR(36), "
             + "`Name` VARCHAR(16) NOT NULL, "
             + "`Premium` BOOLEAN NOT NULL, "
-            + "`Floodgate` BOOLEAN NOT NULL, "
+            + "`Floodgate` INTEGER(3) NOT NULL, "
             + "`LastIp` VARCHAR(255) NOT NULL, "
             + "`LastLogin` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             //the premium shouldn't steal the cracked account by changing the name
@@ -98,7 +99,8 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
             loadStmt.setString(1, name);
 
             try (ResultSet resultSet = loadStmt.executeQuery()) {
-                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false, false, ""));
+                return parseResult(resultSet).orElseGet(() -> new StoredProfile(null, name, false,
+                        FloodgateState.FALSE, ""));
             }
         } catch (SQLException sqlEx) {
             core.getPlugin().getLog().error("Failed to query profile: {}", name, sqlEx);
@@ -131,11 +133,16 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
 
             String name = resultSet.getString("Name");
             boolean premium = resultSet.getBoolean("Premium");
-            Boolean floodgate = resultSet.getBoolean("Floodgate");
+            int floodgateNum = resultSet.getInt("Floodgate");
+            FloodgateState floodgate;
+
             // if the player wasn't migrated to the new database format
             if (resultSet.wasNull()) {
-                floodgate = null;
+                floodgate = FloodgateState.NOT_MIGRATED;
+            } else {
+                floodgate = FloodgateState.fromInt(floodgateNum);
             }
+
             String lastIp = resultSet.getString("LastIp");
             Instant lastLogin = resultSet.getTimestamp("LastLogin").toInstant();
             return Optional.of(new StoredProfile(userId, uuid, name, premium, floodgate, lastIp, lastLogin));
@@ -156,7 +163,7 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
                         saveStmt.setString(1, uuid);
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setBoolean(4, playerProfile.isFloodgate());
+                        saveStmt.setInt(4, playerProfile.getFloodgate().getValue());
                         saveStmt.setString(5, playerProfile.getLastIp());
 
                         saveStmt.setLong(6, playerProfile.getRowId());
@@ -169,7 +176,7 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
                         saveStmt.setString(2, playerProfile.getName());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
                         saveStmt.setBoolean(3, playerProfile.isPremium());
-                        saveStmt.setBoolean(4, playerProfile.isFloodgate());
+                        saveStmt.setInt(4, playerProfile.getFloodgate().getValue());
                         saveStmt.setString(5, playerProfile.getLastIp());
 
                         saveStmt.execute();

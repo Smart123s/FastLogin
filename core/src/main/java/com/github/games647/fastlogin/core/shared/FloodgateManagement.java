@@ -84,28 +84,27 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
         if (profile.isSaved()) {
             if (!profile.isFloodgateMigrated()) {
                 if (isLinked) {
-                    profile.setFloodgate(false);
+                    profile.setFloodgate(FloodgateState.LINKED);
                     core.getPlugin().getLog().info(
-                            "Player {} will be migrated to the v2 database schema as a JAVA (linked Floodgate) user",
+                            "Player {} will be migrated to the v2 database schema as a linked Floodgate user",
                             username);
                 } else {
-                    profile.setFloodgate(true);
+                    profile.setFloodgate(FloodgateState.TRUE);
                     core.getPlugin().getLog().info(
                             "Player {} will be migrated to the v2 database schema as a Floodgate user", username);
                 }
-            } else if (!profile.isFloodgate() && !isLinked) {
-                core.getPlugin().getLog().info("Player {} is already stored by FastLogin as a Java Edition player",
-                        username);
-                return;
-            } else if (profile.isFloodgate() && isLinked) {
+            } else if (profile.getFloodgate() == FloodgateState.TRUE && isLinked) {
                 core.getPlugin().getLog()
                         .info("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
                                 username);
                 return;
             }
         } else {
-            // linked players are stored as Java (= not Floodgate) players
-            profile.setFloodgate(!isLinked);
+            if (isLinked) {
+                profile.setFloodgate(FloodgateState.LINKED);
+            } else {
+                profile.setFloodgate(FloodgateState.TRUE);
+            }
         }
 
         AuthPlugin<P> authPlugin = core.getAuthPluginHook();
@@ -153,7 +152,8 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
 
         //logging in from bedrock for a second time threw an error with UUID
         if (profile == null) {
-            profile = new StoredProfile(getUUID(player), username, true, true, getAddress(player).toString());
+            profile = new StoredProfile(getUUID(player), username, true, FloodgateState.TRUE,
+                    getAddress(player).toString());
         }
 
         //start Bukkit/Bungee specific tasks

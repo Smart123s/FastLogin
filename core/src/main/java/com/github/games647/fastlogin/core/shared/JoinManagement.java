@@ -68,10 +68,10 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         }
 
         if (!profile.isFloodgateMigrated()) {
-            profile.setFloodgate(false);
+            profile.setFloodgate(FloodgateState.FALSE);
             core.getPlugin().getLog().info(
                     "Player {} will be migrated to the v2 database schema as a JAVA user", username);
-        } else if (profile.isFloodgate()) {
+        } else if (profile.getFloodgate() == FloodgateState.TRUE) {
             core.getPlugin().getLog().info("Player {} is already stored by FastLogin as a Bedrock Edition player",
                     username);
             return;
@@ -154,7 +154,7 @@ public abstract class JoinManagement<P extends C, C, S extends LoginSource> {
         if (core.getConfig().get("nameChangeCheck", false)) {
             StoredProfile storedProfile = core.getAuthStorage().loadProfile(profile.getId());
             if (storedProfile != null) {
-                if (storedProfile.isFloodgate()) {
+                if (storedProfile.getFloodgate() == FloodgateState.TRUE) {
                     core.getPlugin().getLog()
                             .info("Player {} is already stored by FastLogin as a Bedrock Edition player.", username);
                     return false;

@@ -26,6 +26,7 @@
 package com.github.games647.fastlogin.core;
 
 import com.github.games647.craftapi.model.Profile;
+import com.github.games647.fastlogin.core.shared.FloodgateState;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -39,12 +40,12 @@ public class StoredProfile extends Profile {
     private final ReentrantLock saveLock = new ReentrantLock();
 
     private boolean premium;
-    private Boolean floodgate;
+    private FloodgateState floodgate;
     private String lastIp;
     private Instant lastLogin;
 
-    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, Boolean floodgate, String lastIp,
-            Instant lastLogin) {
+    public StoredProfile(long rowId, UUID uuid, String playerName, boolean premium, FloodgateState floodgate,
+                         String lastIp, Instant lastLogin) {
         super(uuid, playerName);
 
         this.rowId = rowId;
@@ -54,13 +55,13 @@ public class StoredProfile extends Profile {
         this.lastLogin = lastLogin;
     }
 
-    public StoredProfile(UUID uuid, String playerName, boolean premium, boolean isFloodgate, String lastIp) {
+    public StoredProfile(UUID uuid, String playerName, boolean premium, FloodgateState isFloodgate, String lastIp) {
         this(-1, uuid, playerName, premium, isFloodgate, lastIp, Instant.now());
     }
 
     @Deprecated
     public StoredProfile(UUID uuid, String playerName, boolean premium, String lastIp) {
-        this(-1, uuid, playerName, premium, false, lastIp, Instant.now());
+        this(-1, uuid, playerName, premium, FloodgateState.FALSE, lastIp, Instant.now());
     }
 
     public ReentrantLock getSaveLock() {
@@ -104,15 +105,15 @@ public class StoredProfile extends Profile {
         this.premium = premium;
     }
 
-    public synchronized boolean isFloodgate() {
+    public synchronized FloodgateState getFloodgate() {
         return floodgate;
     }
 
     public synchronized boolean isFloodgateMigrated() {
-        return floodgate != null;
+        return floodgate != FloodgateState.NOT_MIGRATED;
     }
 
-    public synchronized void setFloodgate(boolean floodgate) {
+    public synchronized void setFloodgate(FloodgateState floodgate) {
         this.floodgate = floodgate;
     }
 

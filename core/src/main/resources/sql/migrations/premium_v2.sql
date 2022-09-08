@@ -1,1 +1,1 @@
-ALTER TABLE premium ADD COLUMN Floodgate BOOLEAN;
+ALTER TABLE premium ADD COLUMN Floodgate INTEGER(3);
