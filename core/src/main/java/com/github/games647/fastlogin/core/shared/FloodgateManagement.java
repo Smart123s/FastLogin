@@ -98,6 +98,11 @@ public abstract class FloodgateManagement<P extends C, C, L extends LoginSession
                         .info("Player {} is already stored by FastLogin as a non-linked Bedrock Edition player",
                                 username);
                 return;
+            } else if (profile.getFloodgate() == FloodgateState.FALSE && isLinked) {
+                profile.setFloodgate(FloodgateState.LINKED);
+                core.getPlugin().getLog().info(
+                        "Player {} will be changed from a Java player to a linked Floodgate player",
+                        username);
             }
         } else {
             if (isLinked) {
