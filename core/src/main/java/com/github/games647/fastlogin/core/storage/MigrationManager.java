@@ -120,11 +120,11 @@ public class MigrationManager {
             core.getPlugin().getLog().info("Starting database migration of table {} to version {}",
                     table.getTableName(), i + 1);
             try (Connection con = storage.getDataSource().getConnection();
-                    Statement migrateStmt = con.createStatement();
-                    PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION);
-                ) {
+                    PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION)) {
                 for (String statement : getMigrationStatement(table, i)) {
-                    migrateStmt.executeUpdate(statement);
+                    try (Statement migrateStmt = con.createStatement()) {
+                        migrateStmt.executeUpdate(statement);
+                    }
                 }
 
                 // add entry to migrations table
