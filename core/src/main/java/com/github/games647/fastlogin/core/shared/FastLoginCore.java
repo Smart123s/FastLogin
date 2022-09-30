@@ -255,7 +255,6 @@ public class FastLoginCore<P extends C, C, T extends PlatformPlugin<C>> {
 
         try {
             storage.createTables();
-            storage.migrateTable();
             return true;
         } catch (Exception ex) {
             plugin.getLog().warn("Failed to setup database. Disabling plugin...", ex);

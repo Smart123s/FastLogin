@@ -76,7 +76,7 @@ public class SQLAuthStorage implements AuthStorage, MigratableStorage {
         this.storage = storage;
     }
 
-    protected void createTables() throws SQLException {
+    public void createTable() throws SQLException {
         try (Connection con = storage.getDataSource().getConnection();
                 Statement createStmt = con.createStatement()) {
 

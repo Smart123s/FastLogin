@@ -62,10 +62,6 @@ public abstract class SQLStorage {
 
     public void createTables() throws SQLException {
         migrationManager.createTables();
-        authStorage.createTables();
-    }
-
-    public void migrateTable() {
         migrationManager.migrateTable(authStorage);
     }
 

@@ -25,6 +25,8 @@
  */
 package com.github.games647.fastlogin.core.storage;
 
+import java.sql.SQLException;
+
 public interface MigratableStorage {
 
     /**
@@ -33,5 +35,7 @@ public interface MigratableStorage {
     int getRequiredVersion();
 
     String getTableName();
+
+    void createTable() throws SQLException;
 
 }

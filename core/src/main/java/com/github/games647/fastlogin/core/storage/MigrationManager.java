@@ -69,7 +69,7 @@ public class MigrationManager {
         this.storage = storage;
     }
 
-    protected void createTables() throws SQLException {
+    private void createMigrationTable() throws SQLException {
         try (Connection con = storage.getDataSource().getConnection();
                 Statement createStmt = con.createStatement()) {
 
@@ -81,6 +81,29 @@ public class MigrationManager {
                 createStmt.executeUpdate(CREATE_TABLE_STMT);
             }
 
+        }
+    }
+
+    /**
+     * Initialize tables if they don't exist yet
+     * @throws SQLException
+     */
+    protected void createTables() throws SQLException {
+        createMigrationTable();
+        createTable(storage.getAuthStorage());
+    }
+
+    /**
+     * Create a new table in the database, and add an entry about it to MigrationManager
+     * @param table the table to be created
+     * @throws SQLException
+     */
+    private void createTable(MigratableStorage table) throws SQLException {
+        if (!tableExists(table)) {
+            table.createTable();
+            try (Connection con = storage.getDataSource().getConnection()) {
+                insertMigration(con, table, table.getRequiredVersion());
+            }
         }
     }
 
@@ -106,7 +129,7 @@ public class MigrationManager {
         }
 
         // special case: table premium was created before the migration manager
-        if (version == 0 && "premium".equals(table.getTableName()) && tableExists(table)) {
+        if (version == 0 && "premium".equals(table.getTableName())) {
             version = 1;
         }
 
@@ -119,18 +142,13 @@ public class MigrationManager {
         for (int i = initialVersion; i < table.getRequiredVersion(); i++) {
             core.getPlugin().getLog().info("Starting database migration of table {} to version {}",
                     table.getTableName(), i + 1);
-            try (Connection con = storage.getDataSource().getConnection();
-                    PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION)) {
+            try (Connection con = storage.getDataSource().getConnection()) {
                 for (String statement : getMigrationStatement(table, i)) {
                     try (Statement migrateStmt = con.createStatement()) {
                         migrateStmt.executeUpdate(statement);
                     }
+                    insertMigration(con, table, i + 1);
                 }
-
-                // add entry to migrations table
-                saveStmt.setString(1, table.getTableName());
-                saveStmt.setInt(2, i + 1);
-                saveStmt.executeUpdate();
             } catch (SQLException sqlEx) {
                 core.getPlugin().getLog().error("Failed to migrate table {} to version {}",
                         table.getTableName(), i + 1, sqlEx);
@@ -138,6 +156,22 @@ public class MigrationManager {
             }
             core.getPlugin().getLog().info("Table {} has been successfully migrated to version {}",
                     table.getTableName(), i + 1);
+        }
+    }
+
+    /**
+     * Add an entry to migrations table
+     * @param con an open connection that was used to execute the migration statements
+     * @param table the table that was migrated
+     * @param newVersion the version the table was migrated to
+     */
+    private void insertMigration(Connection con, MigratableStorage table, int newVersion) {
+        try (PreparedStatement saveStmt = con.prepareStatement(INSERT_MIGRATION)) {
+            saveStmt.setString(1, table.getTableName());
+            saveStmt.setInt(2, newVersion);
+            saveStmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
