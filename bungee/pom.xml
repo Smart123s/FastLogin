@@ -204,6 +204,12 @@
             <artifactId>api</artifactId>
             <version>${geyser.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.geysermc.cumulus</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Login plugin-->

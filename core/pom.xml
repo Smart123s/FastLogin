@@ -56,10 +56,7 @@
         <!-- Floodgate -->
         <repository>
             <id>opencollab-snapshot</id>
-            <url>https://repo.opencollab.dev/artifactory/maven-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
+            <url>https://repo.opencollab.dev/main</url>
         </repository>
     </repositories>
 
@@ -139,6 +136,12 @@
             <artifactId>api</artifactId>
             <version>${geyser.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.geysermc.cumulus</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Common component for contacting the Mojang API-->
