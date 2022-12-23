@@ -174,11 +174,7 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.geysermc.cumulus</groupId>
+                    <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
@@ -206,7 +202,7 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.geysermc.cumulus</groupId>
+                    <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
