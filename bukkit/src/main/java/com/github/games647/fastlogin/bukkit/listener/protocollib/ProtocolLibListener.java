@@ -231,6 +231,17 @@ public class ProtocolLibListener extends PacketAdapter {
         plugin.removeSession(player.getAddress());
 
         PacketContainer packet = packetEvent.getPacket();
+
+        //floodgate event listeners may run after our event listener
+        if (plugin.getFloodgateService() != null) {
+            FloodgatePlayer floodgatePlayer = getFloodgatePlayer(packetEvent.getPlayer());
+            if (floodgatePlayer != null) {
+                //add the floodgate prefix for our internal checks
+                //the correct username will be written to the packet by Floodgate
+                username = floodgatePlayer.getCorrectUsername();
+            }
+        }
+
         Optional<ClientPublicKey> clientKey;
         if (new MinecraftVersion(1, 19, 3).atOrAbove()) {
             // public key is sent separate
